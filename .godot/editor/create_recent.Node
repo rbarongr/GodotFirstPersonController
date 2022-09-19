@@ -1,8 +1,0 @@
-DirectionalLight3D
-WorldEnvironment
-StaticBody3D
-CollisionShape3D
-CSGBox3D
-RayCast3D
-Camera3D
-CharacterBody3D
