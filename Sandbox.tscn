@@ -1,0 +1,31 @@
+[gd_scene load_steps=7 format=3 uid="uid://2r2xorepwlip"]
+
+[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_ndiqr"]
+[ext_resource type="PackedScene" path="res://Assets/Wall.tscn" id="2_v1i81"]
+[ext_resource type="PackedScene" path="res://Assets/Floor.tscn" id="3_qchf3"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
+
+[sub_resource type="Sky" id="Sky_edr0k"]
+sky_material = SubResource("ProceduralSkyMaterial_yxtyg")
+
+[sub_resource type="Environment" id="Environment_k5onh"]
+background_mode = 2
+sky = SubResource("Sky_edr0k")
+sdfgi_enabled = true
+
+[node name="Node3d" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_k5onh")
+
+[node name="DirectionalLight3d" type="DirectionalLight3D" parent="WorldEnvironment"]
+transform = Transform3D(-0.678961, 0.262875, -0.685499, -0.027831, 0.923814, 0.38183, 0.733646, 0.278326, -0.619918, 0, 6.83834, 0)
+
+[node name="Player" parent="." instance=ExtResource("1_ndiqr")]
+mouse_sens = 2.0
+
+[node name="Wall" parent="." instance=ExtResource("2_v1i81")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.75)
+
+[node name="Floor" parent="." instance=ExtResource("3_qchf3")]
