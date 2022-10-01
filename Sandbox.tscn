@@ -14,7 +14,7 @@ background_mode = 2
 sky = SubResource("Sky_edr0k")
 sdfgi_enabled = true
 
-[node name="Node3d" type="Node3D"]
+[node name="World" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_k5onh")
