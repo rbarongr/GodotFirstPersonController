@@ -1,6 +1,6 @@
 # Godot 4 basic First Person Controller
 This project contains the basic implementation of a First Person character controller for the Godot 4 [Beta 2].
-The main scene is a _Sandbox_ scene use to test the controls.
+The main scene is a _Sandbox_ scene used to test the controls.
 
 ![EditorView](Assets/Godot4Beta2FPC.png)
 
