@@ -17,6 +17,8 @@ func _input(event) -> void:
 		mouse_axis = event.relative
 		camera.rotation.y -= mouse_axis.x * mouse_sens * .001
 		camera.rotation.x = clamp(camera.rotation.x - mouse_axis.y * mouse_sens * .001, -1.5, 1.5)
+	if Input.is_action_just_pressed("exit"):
+		get_tree().quit()
 
 func _physics_process(delta):
 	if not is_on_floor(): velocity.y -= gravity * delta
