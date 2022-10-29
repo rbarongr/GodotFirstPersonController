@@ -2,14 +2,14 @@ extends CharacterBody3D
 
 @export var speed : float = 5.0
 @export var jump_vel : float = 4.5
-@export var mouse_sens : float = 2
+@export_range(0.01, 4.0, 0.1) var mouse_sens : float = 2
 
 var mouse_axis : Vector2
 var gravity : float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 @onready var camera : Camera3D = $Camera
 
-func _ready():
+func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _input(event) -> void:

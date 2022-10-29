@@ -23,7 +23,6 @@ environment = SubResource("Environment_k5onh")
 transform = Transform3D(-0.678961, 0.262875, -0.685499, -0.027831, 0.923814, 0.38183, 0.733646, 0.278326, -0.619918, 0, 6.83834, 0)
 
 [node name="Player" parent="." instance=ExtResource("1_ndiqr")]
-mouse_sens = 2.0
 
 [node name="Wall" parent="." instance=ExtResource("2_v1i81")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.75)
