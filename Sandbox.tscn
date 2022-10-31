@@ -1,8 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://2r2xorepwlip"]
 
 [ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_ndiqr"]
-[ext_resource type="PackedScene" path="res://Assets/Wall.tscn" id="2_v1i81"]
-[ext_resource type="PackedScene" path="res://Assets/Floor.tscn" id="3_qchf3"]
+[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_7sl6d"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
 
@@ -12,7 +11,13 @@ sky_material = SubResource("ProceduralSkyMaterial_yxtyg")
 [sub_resource type="Environment" id="Environment_k5onh"]
 background_mode = 2
 sky = SubResource("Sky_edr0k")
-sdfgi_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p85vg"]
+albedo_texture = ExtResource("2_7sl6d")
+metallic_specular = 0.0
+roughness = 0.1
+roughness_texture = ExtResource("2_7sl6d")
+uv1_triplanar = true
 
 [node name="World" type="Node3D"]
 
@@ -21,10 +26,38 @@ environment = SubResource("Environment_k5onh")
 
 [node name="DirectionalLight3d" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(-0.678961, 0.262875, -0.685499, -0.027831, 0.923814, 0.38183, 0.733646, 0.278326, -0.619918, 0, 6.83834, 0)
+shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("1_ndiqr")]
 
-[node name="Wall" parent="." instance=ExtResource("2_v1i81")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.75)
+[node name="Platform" type="Node3D" parent="."]
 
-[node name="Floor" parent="." instance=ExtResource("3_qchf3")]
+[node name="Floor" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
+use_collision = true
+size = Vector3(10, 0.5, 10)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Ramp" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, 4, 1.28, -2.264)
+use_collision = true
+size = Vector3(2, 0.5, 6)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Ramp2" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, -4, 1.28, -2.264)
+use_collision = true
+size = Vector3(2, 0.5, 6)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor2" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, -10)
+use_collision = true
+size = Vector3(10, 0.5, 10)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Wall" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -5)
+use_collision = true
+size = Vector3(10, 3, 0.5)
+material = SubResource("StandardMaterial3D_p85vg")
