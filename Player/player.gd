@@ -35,6 +35,7 @@ func _aim(event : InputEvent) -> void:
 
 func _physics_process(delta : float) -> void:
 	velocity = _walk(delta) + _gravity(delta) + _jump(delta)
+	@warning_ignore(return_value_discarded)
 	move_and_slide()
 
 func _walk(delta : float) -> Vector3:
