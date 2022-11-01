@@ -2,7 +2,7 @@
 This project contains the basic implementation of a First Person character controller for the Godot 4 [Beta 3].
 The main scene is a _Sandbox_ scene used to test the controls.
 
-![EditorView](Assets/Godot4Beta2FPC.png)
+![EditorView](Assets/Godot4Beta3FPC.png)
 
 ## Controls
 Movement with WASD, mouse to look around and SPACE for jumping. You can change any of this keys in the Project Settings -> Input Map.
