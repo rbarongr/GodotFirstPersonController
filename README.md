@@ -24,5 +24,4 @@ The main scene is a _Sandbox_ scene used to test the controls:
 You can change any of this keys in the Project Settings -> Input Map.
 
 ## Known issues
-- Gravity is not an acceleration force
 - Godot is not ignoring the warning in the _capture_mouse()_ function

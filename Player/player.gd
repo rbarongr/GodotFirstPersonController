@@ -46,7 +46,7 @@ func _walk(delta : float) -> Vector3:
 	return walk_vel
 
 func _gravity(delta : float) -> Vector3:
-	grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, -gravity, 0), gravity * delta)
+	grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
 	return grav_vel
 
 func _jump(delta : float) -> Vector3:
