@@ -1,5 +1,5 @@
 # Godot 4 - Basic First Person Controller
-This project contains the basic implementation of a First Person character controller for the Godot 4 [Beta 4].
+This project contains the basic implementation of a First Person character controller for the [Godot 4 [Beta 4]](https://downloads.tuxfamily.org/godotengine/4.0/beta4/).
 
 The code found in [player.gd](Player/player.gd) uses vector forces to move the player. You can tweak the values of the forces in the editor directly. The _velocity_ of the player is calculated as a result of the vector sum of different vector forces: walk, jump and gravity.
 
