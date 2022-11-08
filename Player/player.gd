@@ -56,5 +56,5 @@ func _jump(delta : float) -> Vector3:
 	return jump_vel
 
 func capture_mouse(capture : bool) -> void:
-	@warning_ignore(standalone_expression) # This warning shouldn't be needed IMO (and doesn't work in Beta 3)
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) if capture else Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if capture: Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED) 
+	else: Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
