@@ -1,12 +1,15 @@
 class_name Player extends CharacterBody3D
 
 @export_category("Player")
+@export_range(1, 2, 1) var player_height_default: float = 2 # m
+@export_range(0.5, 2, 1) var player_height_crouching: float = .5 # m
+
 @export_range(1, 35, 1) var speed_run: float = 10 # m/s
 @export_range(1, 35, 1) var speed_walk: float = 5 # m/s
 # how fast the player walks while crouching
 @export_range(1, 35, 1) var speed_crouched: float = 2
 # how fast the player goes into crouch position
-@export_range(1, 35, 1) var speed_crouching: float = 20
+@export_range(1, 35, 1) var speed_crouching: float = 10
 
 @export_range(0, 10, 1) var height_default: float = 1.5
 @export_range(0, 10, 1) var height_crouched: float = 0.5
@@ -26,6 +29,8 @@ var jumping: bool = false
 var jumping_secondary: bool = false
 var jump_hold: bool = false
 
+var crouching: bool = false
+
 var mouse_captured: bool = false
 
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -37,6 +42,7 @@ var walk_vel: Vector3 # Walking velocity
 var grav_vel: Vector3 # Gravity velocity 
 var jump_vel: Vector3 # Jumping velocity
 
+@onready var player_capsule: CollisionShape3D = $CShape
 @onready var camera: Camera3D = $Camera
 
 func _ready() -> void:
@@ -47,8 +53,12 @@ func _input(event: InputEvent) -> void:
 	
 	if Input.is_action_pressed("move_walk"): speed = speed_walk
 	if Input.is_action_just_released("move_walk"): speed = speed_run
-	if Input.is_action_pressed("move_crouch"): speed = speed_crouched
-	if Input.is_action_just_released("move_crouch"): speed = speed_run
+	if Input.is_action_pressed("move_crouch"):
+		speed = speed_crouched
+		crouching = true
+	if Input.is_action_just_released("move_crouch"):
+		speed = speed_run
+		crouching = false
 	
 	if Input.is_action_just_pressed("jump"):
 		jumping = true
@@ -107,3 +117,10 @@ func _jump(delta: float) -> Vector3:
 		jump_vel = Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
 	
 	return jump_vel
+
+func _process(delta: float):
+	if crouching:
+		player_capsule.shape.height -= speed_crouching * delta
+	else:
+		player_capsule.shape.height += speed_crouching * delta
+	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
