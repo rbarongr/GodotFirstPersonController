@@ -1,14 +1,13 @@
 [gd_scene load_steps=3 format=3 uid="uid://cdk6hwb4hi2wc"]
 
-[ext_resource type="Script" path="res://Player/player.gd" id="1_0uu2d"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_80bwg"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.3
 height = 1.8
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_0uu2d")
-jump_height = 2.0
+script = ExtResource("1_80bwg")
 
 [node name="CShape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)

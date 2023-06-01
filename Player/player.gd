@@ -8,15 +8,21 @@ class_name Player extends CharacterBody3D
 # how fast the player goes into crouch position
 @export_range(1, 35, 1) var speed_crouching: float = 20
 
+@export_range(0, 10, 1) var height_default: float = 1.5
+@export_range(0, 10, 1) var height_crouched: float = 0.5
+
 @export_range(10, 400, 1) var acceleration: float = 10000 # m/s^2
 
-@export_range(0.1, 3.0, 0.1) var jump_height: float = 1.5 # m
+@export_range(0.1, 3.0, 0.1) var jump_height_primary: float = 1.5 # m
+@export_range(0.1, 3.0, 0.1) var jump_height_secondary: float = 3
+@export var jump_secondary_allowed: bool = true
+
 @export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 4
 
 var speed: float = speed_run
 
 var jumping: bool = false
-var speed_walking: bool = false
+var jumping_secondary: bool = false
 
 var mouse_captured: bool = false
 
@@ -43,6 +49,7 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_released("move_crouch"): speed = speed_run
 	
 	if Input.is_action_just_pressed("jump"): jumping = true
+	if Input.is_action_just_pressed("jump_secondary"): jumping_secondary = true
 	
 	if Input.is_action_just_pressed("exit"): get_tree().quit()
 
@@ -79,8 +86,17 @@ func _gravity(delta: float) -> Vector3:
 
 func _jump(delta: float) -> Vector3:
 	if jumping:
-		if is_on_floor(): jump_vel = Vector3(0, sqrt(4 * jump_height * gravity), 0)
 		jumping = false
+		
+		if is_on_floor():
+			jump_vel = Vector3(0, sqrt(4 * jump_height_primary * gravity), 0)
+			return jump_vel
+	
+	if jump_secondary_allowed and jumping_secondary:
+		jumping_secondary = false
+		
+		jump_vel = Vector3(0, sqrt(4 * jump_height_secondary * gravity), 0)
 		return jump_vel
+	
 	jump_vel = Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
 	return jump_vel
