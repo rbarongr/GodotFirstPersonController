@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://2r2xorepwlip"]
 
-[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_grfwc"]
-[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_ktbfp"]
+[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_1wmd2"]
+[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_tydmy"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
 
@@ -13,10 +13,10 @@ background_mode = 2
 sky = SubResource("Sky_edr0k")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p85vg"]
-albedo_texture = ExtResource("2_ktbfp")
+albedo_texture = ExtResource("2_tydmy")
 metallic_specular = 0.0
 roughness = 0.1
-roughness_texture = ExtResource("2_ktbfp")
+roughness_texture = ExtResource("2_tydmy")
 uv1_triplanar = true
 
 [node name="World" type="Node3D"]
@@ -28,7 +28,21 @@ environment = SubResource("Environment_k5onh")
 transform = Transform3D(-0.678961, 0.262875, -0.685499, -0.027831, 0.923814, 0.38183, 0.733646, 0.278326, -0.619918, 0, 6.83834, 0)
 shadow_enabled = true
 
-[node name="Player" parent="." instance=ExtResource("1_grfwc")]
+[node name="Player" parent="." instance=ExtResource("1_1wmd2")]
+player_height_default = 2.0
+player_height_crouching = 0.5
+speed_run = 10.0
+speed_walk = 5.0
+speed_crouched = 2.0
+speed_crouching = 10.0
+height_default = 1.5
+height_crouched = 0.5
+acceleration = 10000.0
+jump_height_primary = 1.5
+jump_height_secondary = 3.0
+jump_secondary_allowed = true
+jump_hold_allowed = true
+camera_sens = 4.0
 
 [node name="Platform" type="Node3D" parent="."]
 

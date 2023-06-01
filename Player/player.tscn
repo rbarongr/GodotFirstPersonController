@@ -1,13 +1,13 @@
 [gd_scene load_steps=3 format=3 uid="uid://cdk6hwb4hi2wc"]
 
-[ext_resource type="Script" path="res://Player/player.gd" id="1_sq58g"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_7seoj"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.3
 height = 1.8
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_sq58g")
+script = ExtResource("1_7seoj")
 
 [node name="CShape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -16,3 +16,12 @@ shape = SubResource("CapsuleShape3D_3rsb5")
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 fov = 80.0
+
+[node name="PlayerFlashlight" type="SpotLight3D" parent="Camera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.197474, 0)
+light_energy = 100.0
+light_size = 0.5
+shadow_enabled = true
+spot_range = 50.0
+spot_angle = 25.0
+spot_angle_attenuation = 4.0

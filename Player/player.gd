@@ -42,11 +42,14 @@ var walk_vel: Vector3 # Walking velocity
 var grav_vel: Vector3 # Gravity velocity 
 var jump_vel: Vector3 # Jumping velocity
 
+@onready var player: Player = $Player
 @onready var player_capsule: CollisionShape3D = $CShape
 @onready var camera: Camera3D = $Camera
+@onready var flashlight: SpotLight3D = $Camera/PlayerFlashlight
 
 func _ready() -> void:
 	capture_mouse()
+	flashlight.hide()
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
@@ -65,6 +68,12 @@ func _input(event: InputEvent) -> void:
 		jump_hold = true
 	if Input.is_action_just_released("jump"): jump_hold = false
 	if Input.is_action_just_pressed("jump_secondary"): jumping_secondary = true
+	
+	if Input.is_action_just_pressed("flashlight_toggle"):
+		if flashlight.visible:
+			flashlight.hide()
+		else:
+			flashlight.show()
 	
 	if Input.is_action_just_pressed("exit"): get_tree().quit()
 
