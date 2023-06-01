@@ -93,7 +93,7 @@ size = Vector3(4, 1, 4)
 material = SubResource("StandardMaterial3D_p85vg")
 
 [node name="Floor10" type="CSGBox3D" parent="Platform"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.084599, 2.56763, 17.8575)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.084599, 2.50106, 17.8575)
 use_collision = true
 size = Vector3(4, 1, 4)
 material = SubResource("StandardMaterial3D_p85vg")
