@@ -15,7 +15,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_3rsb5")
 
 [node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49833, 0)
 fov = 80.0
 
 [node name="PlayerFlashlight" type="SpotLight3D" parent="Camera"]
@@ -46,3 +46,8 @@ size_flags_vertical = 4
 layout_mode = 2
 texture = ExtResource("2_bg6hw")
 stretch_mode = 5
+
+[node name="CollisionRayTop" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.50126, 0)
+target_position = Vector3(0, 0.3, 0)
+collide_with_areas = true

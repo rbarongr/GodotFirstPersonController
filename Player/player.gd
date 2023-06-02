@@ -29,6 +29,7 @@ var jumping: bool = false
 var jumping_secondary: bool = false
 var jump_hold: bool = false
 
+var walking: bool = false
 var crouching: bool = false
 
 var mouse_captured: bool = false
@@ -46,6 +47,7 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var player_capsule: CollisionShape3D = $CShape
 @onready var camera: Camera3D = $Camera
 @onready var flashlight: SpotLight3D = $Camera/PlayerFlashlight
+@onready var raycast_vertical: RayCast3D = $CollisionRayTop
 
 func _ready() -> void:
 	capture_mouse()
@@ -54,13 +56,14 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
 	
-	if Input.is_action_pressed("move_walk"): speed = speed_walk
+	if Input.is_action_pressed("move_walk"):
+		walking = true
+	if Input.is_action_just_released("move_walk"):
+		walking = false
 	if Input.is_action_just_released("move_walk"): speed = speed_run
 	if Input.is_action_pressed("move_crouch"):
-		speed = speed_crouched
 		crouching = true
 	if Input.is_action_just_released("move_crouch"):
-		speed = speed_run
 		crouching = false
 	
 	if Input.is_action_just_pressed("jump"):
@@ -101,6 +104,16 @@ func _walk(delta: float) -> Vector3:
 	var _forward: Vector3 = camera.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
 	var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
 	
+	if raycast_vertical.is_colliding():
+		if player_capsule.shape.height < player_height_default:
+			speed = speed_crouched
+	elif crouching:
+		speed = speed_crouched
+	elif walking:
+		speed = speed_walk
+	else:
+		speed = speed_run
+	
 	walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
 	return walk_vel
 
@@ -130,6 +143,6 @@ func _jump(delta: float) -> Vector3:
 func _process(delta: float):
 	if crouching:
 		player_capsule.shape.height -= speed_crouching * delta
-	else:
+	elif not raycast_vertical.is_colliding():
 		player_capsule.shape.height += speed_crouching * delta
 	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
