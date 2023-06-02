@@ -45,10 +45,11 @@ var jump_vel: Vector3 # Jumping velocity
 
 @onready var player: Player = $Player
 @onready var player_capsule: CollisionShape3D = $CShapeBody
-@onready var camera: Camera3D = $CShapeHead/Camera
-@onready var flashlight: SpotLight3D = $CShapeHead/Camera/PlayerFlashlight
+@onready var camera_fp: Camera3D = $CShapeHead/CameraFirstPerson
+@onready var camera_map: Camera3D = $CShapeHead/CameraMap
+@onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
 @onready var raycast_vertical: RayCast3D = $CShapeHead/CollisionRayTop
-@onready var racyast_crosshair: RayCast3D = $CShapeHead/Camera/CollisionRayCrosshair
+@onready var racyast_crosshair: RayCast3D = $CShapeHead/CameraFirstPerson/CollisionRayCrosshair
 
 func _ready() -> void:
 	capture_mouse()
@@ -79,6 +80,18 @@ func _input(event: InputEvent) -> void:
 		else:
 			flashlight.show()
 	
+	if Input.is_action_just_pressed("map_toggle"):
+		if camera_fp.current:
+			camera_map.current = true
+		else:
+			camera_fp.current = true
+	
+	if camera_map.current:
+		if Input.is_action_pressed("mouse_wheel_up"):
+			camera_map.fov += 3
+		if Input.is_action_pressed("mouse_wheel_down"):
+			camera_map.fov -= 3
+	
 	if Input.is_action_just_pressed("exit"): get_tree().quit()
 
 func _physics_process(delta: float) -> void:
@@ -96,13 +109,18 @@ func release_mouse() -> void:
 
 func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
 	look_dir += Input.get_vector("look_left","look_right","look_up","look_down")
-	camera.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
-	camera.rotation.x = clamp(camera.rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
+	
+	camera_fp.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
+	camera_fp.rotation.x = clamp(camera_fp.rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
+	
+	camera_map.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
+	#camera_map.rotation.x = clamp(camera_map.rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
+	
 	look_dir = Vector2.ZERO
 
 func _walk(delta: float) -> Vector3:
 	move_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backwards")
-	var _forward: Vector3 = camera.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
+	var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
 	var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
 	
 	if raycast_vertical.is_colliding():

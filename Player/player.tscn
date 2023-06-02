@@ -8,7 +8,7 @@ radius = 0.3
 height = 1.8
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_0jyoh"]
-radius = 0.0922719
+radius = 0.096856
 
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_4wkkg")
@@ -21,11 +21,12 @@ shape = SubResource("CapsuleShape3D_3rsb5")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49999, 0)
 shape = SubResource("SphereShape3D_0jyoh")
 
-[node name="Camera" type="Camera3D" parent="CShapeHead"]
+[node name="CameraFirstPerson" type="Camera3D" parent="CShapeHead"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00145996, 0)
+current = true
 fov = 80.0
 
-[node name="PlayerFlashlight" type="SpotLight3D" parent="CShapeHead/Camera"]
+[node name="PlayerFlashlight" type="SpotLight3D" parent="CShapeHead/CameraFirstPerson"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.197474, 0)
 light_energy = 100.0
 light_size = 0.5
@@ -35,7 +36,7 @@ spot_range = 50.0
 spot_angle = 25.0
 spot_angle_attenuation = 4.0
 
-[node name="CenterContainer" type="CenterContainer" parent="CShapeHead/Camera"]
+[node name="CenterContainer" type="CenterContainer" parent="CShapeHead/CameraFirstPerson"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -50,15 +51,19 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="TextureRect" type="TextureRect" parent="CShapeHead/Camera/CenterContainer"]
+[node name="TextureRect" type="TextureRect" parent="CShapeHead/CameraFirstPerson/CenterContainer"]
 layout_mode = 2
 texture = ExtResource("2_qo25l")
 stretch_mode = 5
 
-[node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/Camera"]
+[node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFirstPerson"]
 target_position = Vector3(0, 0, -100)
 
 [node name="CollisionRayTop" type="RayCast3D" parent="CShapeHead"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00127006, 0)
 target_position = Vector3(0, 0.4, 0)
 collide_with_areas = true
+
+[node name="CameraMap" type="Camera3D" parent="CShapeHead"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 20, 0)
+size = 20.0
