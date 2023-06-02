@@ -1,14 +1,14 @@
 [gd_scene load_steps=4 format=3 uid="uid://cdk6hwb4hi2wc"]
 
-[ext_resource type="Script" path="res://Player/player.gd" id="1_7seoj"]
-[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://crosshair.png" id="2_2d372"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_bjf00"]
+[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_bg6hw"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.3
 height = 1.8
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_7seoj")
+script = ExtResource("1_bjf00")
 
 [node name="CShape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -44,5 +44,5 @@ size_flags_vertical = 4
 
 [node name="TextureRect" type="TextureRect" parent="Camera/CenterContainer"]
 layout_mode = 2
-texture = ExtResource("2_2d372")
+texture = ExtResource("2_bg6hw")
 stretch_mode = 5
