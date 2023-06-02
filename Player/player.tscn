@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://cdk6hwb4hi2wc"]
+[gd_scene load_steps=6 format=3 uid="uid://cdk6hwb4hi2wc"]
 
-[ext_resource type="Script" path="res://Player/player.gd" id="1_4wkkg"]
-[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_qo25l"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_dc0xa"]
+[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_b4yu1"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.3
@@ -10,8 +10,10 @@ height = 1.8
 [sub_resource type="SphereShape3D" id="SphereShape3D_0jyoh"]
 radius = 0.096856
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ru8h1"]
+
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_4wkkg")
+script = ExtResource("1_dc0xa")
 
 [node name="CShapeBody" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -53,7 +55,7 @@ size_flags_vertical = 4
 
 [node name="TextureRect" type="TextureRect" parent="CShapeHead/CameraFirstPerson/CenterContainer"]
 layout_mode = 2
-texture = ExtResource("2_qo25l")
+texture = ExtResource("2_b4yu1")
 stretch_mode = 5
 
 [node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFirstPerson"]
@@ -67,3 +69,28 @@ collide_with_areas = true
 [node name="CameraMap" type="Camera3D" parent="CShapeHead"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 20, 0)
 size = 20.0
+
+[node name="VisibleBody" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.827538, 0)
+visible = false
+radius = 0.300575
+
+[node name="VisibleHead" type="CSGSphere3D" parent="VisibleBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.67727, 0)
+radius = 0.0946376
+
+[node name="VisibleNose" type="CSGCylinder3D" parent="VisibleBody/VisibleHead"]
+transform = Transform3D(-0.999606, -0.0280613, 1.2266e-09, -5.64642e-23, -4.37114e-08, -1, 0.0280612, -0.999606, 4.36942e-08, 0, -0.0170112, -0.111069)
+custom_aabb = AABB(0.14, 0, 0, 0, 0, 0)
+radius = 0.0198027
+height = 0.0622269
+material = SubResource("ShaderMaterial_ru8h1")
+
+[node name="VisibleTorso" type="CSGSphere3D" parent="VisibleBody"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.407523, 0)
+radius = 0.207342
+
+[node name="VisibleShoulders" type="CSGCylinder3D" parent="VisibleBody/VisibleTorso"]
+transform = Transform3D(-4.37114e-08, 1, -4.37114e-08, 0, -4.37114e-08, -1, -1, -4.37114e-08, 1.91069e-15, 0, 0.021659, -0.0348524)
+radius = 0.0371688
+height = 0.627514

@@ -51,6 +51,8 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var raycast_vertical: RayCast3D = $CShapeHead/CollisionRayTop
 @onready var racyast_crosshair: RayCast3D = $CShapeHead/CameraFirstPerson/CollisionRayCrosshair
 
+@onready var player_body: CSGSphere3D = $VisibleBody
+
 func _ready() -> void:
 	capture_mouse()
 	flashlight.hide()
@@ -83,8 +85,10 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("map_toggle"):
 		if camera_fp.current:
 			camera_map.current = true
+			player_body.visible = true
 		else:
 			camera_fp.current = true
+			player_body.visible = false
 	
 	if camera_map.current:
 		if Input.is_action_pressed("mouse_wheel_up"):
@@ -115,6 +119,7 @@ func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
 	
 	camera_map.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
 	#camera_map.rotation.x = clamp(camera_map.rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
+	player_body.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
 	
 	look_dir = Vector2.ZERO
 
