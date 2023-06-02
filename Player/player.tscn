@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://cdk6hwb4hi2wc"]
+[gd_scene load_steps=4 format=3 uid="uid://cdk6hwb4hi2wc"]
 
 [ext_resource type="Script" path="res://Player/player.gd" id="1_7seoj"]
+[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://crosshair.png" id="2_2d372"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.3
@@ -25,3 +26,23 @@ shadow_enabled = true
 spot_range = 50.0
 spot_angle = 25.0
 spot_angle_attenuation = 4.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Camera"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TextureRect" type="TextureRect" parent="Camera/CenterContainer"]
+layout_mode = 2
+texture = ExtResource("2_2d372")
+stretch_mode = 5
