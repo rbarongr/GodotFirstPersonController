@@ -44,10 +44,11 @@ var grav_vel: Vector3 # Gravity velocity
 var jump_vel: Vector3 # Jumping velocity
 
 @onready var player: Player = $Player
-@onready var player_capsule: CollisionShape3D = $CShape
-@onready var camera: Camera3D = $Camera
-@onready var flashlight: SpotLight3D = $Camera/PlayerFlashlight
-@onready var raycast_vertical: RayCast3D = $CollisionRayTop
+@onready var player_capsule: CollisionShape3D = $CShapeBody
+@onready var camera: Camera3D = $CShapeHead/Camera
+@onready var flashlight: SpotLight3D = $CShapeHead/Camera/PlayerFlashlight
+@onready var raycast_vertical: RayCast3D = $CShapeHead/CollisionRayTop
+@onready var racyast_crosshair: RayCast3D = $CShapeHead/Camera/CollisionRayCrosshair
 
 func _ready() -> void:
 	capture_mouse()
@@ -138,6 +139,9 @@ func _jump(delta: float) -> Vector3:
 	else:
 		jump_vel = Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
 	
+	if raycast_vertical.is_colliding():
+		jump_vel = Vector3.ZERO
+	
 	return jump_vel
 
 func _process(delta: float):
@@ -146,3 +150,4 @@ func _process(delta: float):
 	elif not raycast_vertical.is_colliding():
 		player_capsule.shape.height += speed_crouching * delta
 	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
+	
