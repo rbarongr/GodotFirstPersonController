@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://2r2xorepwlip"]
+[gd_scene load_steps=9 format=3 uid="uid://2r2xorepwlip"]
 
 [ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_aiy4p"]
 [ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_7yp73"]
 [ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_kdack"]
+[ext_resource type="PackedScene" uid="uid://chascookfeke3" path="res://Scenes/water_surface.tscn" id="4_wkhyu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
 
@@ -184,3 +185,6 @@ size = Vector3(60.1655, 22.1391, 0.5)
 material = SubResource("StandardMaterial3D_p85vg")
 
 [node name="Ladder" parent="Platform" instance=ExtResource("3_kdack")]
+
+[node name="WaterSurface" parent="Platform" instance=ExtResource("4_wkhyu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, -1.00242, 0)
