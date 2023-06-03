@@ -140,10 +140,29 @@ func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
 	look_dir = Vector2.ZERO
 
 func _walk(delta: float) -> Vector3:
-	move_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backwards")
-	var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
-	var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
+	player_adjust_speed()
 	
+	move_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	
+	if movement_state_current == MovementStates.LAND:
+		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
+		var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
+		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
+	
+	elif movement_state_current == MovementStates.LADDER:
+		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, 0)
+		var walk_dir: Vector3 = Vector3(_forward.x, -1 * move_dir.y, _forward.z).normalized()
+		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
+	
+	elif movement_state_current == MovementStates.SWIM:
+		pass
+	
+	elif movement_state_current == MovementStates.FLY:
+		pass
+	
+	return walk_vel
+
+func player_adjust_speed() -> void:
 	if raycast_vertical.is_colliding():
 		if player_capsule.shape.height < player_height_default:
 			speed = speed_crouched
@@ -153,23 +172,23 @@ func _walk(delta: float) -> Vector3:
 		speed = speed_walk
 	else:
 		speed = speed_run
-	
-	walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
-	return walk_vel
 
 func _gravity(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
+		gravity_current = gravity_default
+		
 		if jump_hold_allowed and jump_state_current == JumpStates.HOLD:
 			grav_vel = Vector3.ZERO
 		else:
 			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity_current, 0), gravity_current * delta)
 		
-	if movement_state_current == MovementStates.LADDER:
-		pass
-	if movement_state_current == MovementStates.SWIM:
-		pass
-	if movement_state_current == MovementStates.FLY:
-		pass
+	elif movement_state_current == MovementStates.LADDER:
+		gravity_current = 0
+		grav_vel = Vector3.ZERO
+	elif movement_state_current == MovementStates.SWIM:
+		gravity_current = 0
+	elif movement_state_current == MovementStates.FLY:
+		gravity_current = 0
 	
 	return grav_vel
 
