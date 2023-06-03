@@ -76,22 +76,6 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_released("jump"): jump_hold = false
 	if Input.is_action_just_pressed("jump_secondary"): jumping_secondary = true
 	
-	"""
-	if Input.is_action_just_pressed("flashlight_toggle"):
-		if flashlight.visible:
-			flashlight.hide()
-		else:
-			flashlight.show()
-	"""
-	
-	if Input.is_action_just_pressed("map_toggle"):
-		if camera_fp.current:
-			camera_map.current = true
-			player_body.visible = true
-		else:
-			camera_fp.current = true
-			player_body.visible = false
-	
 	if camera_map.current:
 		if Input.is_action_pressed("mouse_wheel_up"):
 			camera_map.fov += 3
@@ -177,6 +161,14 @@ func _process(delta: float):
 			flashlight.hide()
 		else:
 			flashlight.show()
+	
+	if Input.is_action_just_pressed("map_toggle"):
+		if camera_fp.current:
+			camera_map.current = true
+			player_body.visible = true
+		else:
+			camera_fp.current = true
+			player_body.visible = false
 	
 	if crouching:
 		player_capsule.shape.height -= speed_crouching * delta
