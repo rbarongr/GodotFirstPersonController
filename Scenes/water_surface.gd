@@ -12,18 +12,14 @@ func _process(delta):
 
 
 func _on_body_entered(body):
-	print("in water")
-	
 	if body.name == "Player":
 		#body.ladder_array.append(self)
 		if body.movement_state_current == body.MovementStates.LAND:
-			body.movement_state_current = body.MovementStates.SWIM
+			body.movement_state_current = body.MovementStates.WATER_ENTERED
 		elif body.movement_state_current == body.MovementStates.LADDER_LAND:
 			body.movement_state_current = body.MovementStates.LADDER_WATER
 
 func _on_body_exited(body):
-	print("not in water")
-	
 	if body.name == "Player":
 		#body.ladder_array.append(self)
 		if body.movement_state_current == body.MovementStates.SWIM:

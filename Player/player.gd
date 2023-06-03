@@ -3,6 +3,7 @@ class_name Player extends CharacterBody3D
 @export_category("Player")
 @export_range(1, 2, 1) var player_height_default: float = 2 # m
 @export_range(0.5, 2, 1) var player_height_crouching: float = .5 # m
+@export_range(0.1, 2, 1) var player_height_swimming: float = .2 # m
 
 @export_range(1, 35, 1) var speed_run: float = 10 # m/s
 @export_range(1, 35, 1) var speed_walk: float = 5 # m/s
@@ -16,7 +17,7 @@ class_name Player extends CharacterBody3D
 
 @export_range(10, 400, 1) var acceleration: float = 10000 # m/s^2
 
-@export_range(0.1, 3.0, 0.1) var jump_height_default: float = 1.8 # m
+@export_range(0.1, 3.0, 0.1) var jump_height_default: float = 2 # m
 @export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
 @export var jump_hold_allowed: bool = true
 
@@ -45,6 +46,7 @@ enum MovementStates {
 	LADDER_WATER_ATTACHED, # we need to know where we were before attaching to the ladder in order to know where we have to go back on detach
 	LADDER_LAND,    # the player is already on the ladder, coming from land
 	LADDER_WATER,   # the player is already on the ladder, coming from water
+	WATER_ENTERED,   # the player has entered water
 	SWIM,           # movement under water (or basic flying)
 	FLY
 }
@@ -76,7 +78,7 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var camera_map: Camera3D = $CShapeHead/CameraMap
 @onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
 @onready var raycast_up: RayCast3D = $CShapeHead/RayTop
-@onready var raycast_down: RayCast3D = $CShapeHead/RayDepth
+@onready var raycast_down_swim: RayCast3D = $CShapeHead/RayDepthSwim
 @onready var racyast_crosshair: RayCast3D = $CShapeHead/CameraFirstPerson/CollisionRayCrosshair
 
 @onready var player_body: CSGSphere3D = $VisibleBody
@@ -179,6 +181,9 @@ func _walk(delta: float) -> Vector3:
 			ladder_array.clear()
 	
 	elif movement_state_current == MovementStates.SWIM:
+		#if raycast_down_swim.is_colliding():
+		#	pass
+		
 		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
 		var walk_dir: Vector3 = Vector3(_forward.x, _forward.y, _forward.z).normalized()
 		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
@@ -268,19 +273,36 @@ func _jump(delta: float) -> Vector3:
 			elif movement_state_current == MovementStates.LADDER_WATER:
 				movement_state_current = MovementStates.SWIM
 			ladder_array.clear()
+	
+	elif movement_state_current == MovementStates.WATER_ENTERED:
+		movement_state_current = MovementStates.SWIM
 		
+		var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
+		jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta/2)
+	
 	elif movement_state_current == MovementStates.SWIM:
-		if jump_state_current == JumpStates.DEFAULT:
-			var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
-			return walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
+		# dont bounce around on the water surface as in halflife1
+		if jump_state_current == JumpStates.NO:
+			jump_vel = calc_jump_vel_nojump(delta)
+		elif jump_state_current == JumpStates.DEFAULT:
+			if not raycast_down_swim.is_colliding():
+				var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
+				jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
+				
+			else:
+				# jump of the water surface
+				jump_vel = calc_jump_vel_default()
 			
 		elif jump_state_current == JumpStates.HIGH:
 			var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
-			return walk_vel.move_toward(walk_dir * swim_vertical_fast, acceleration * delta)
+			jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_fast, acceleration * delta)
 		
+		if speed_state_current != SpeedStates.CROUCH and jump_state_current != JumpStates.DEFAULT:
+			#jump_vel = Vector3.ZERO
+			jump_vel = calc_jump_vel_nojump(delta)
 		elif speed_state_current == SpeedStates.CROUCH:
 			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
-			return walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
+			jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
 		
 	elif movement_state_current == MovementStates.FLY:
 		pass
@@ -288,10 +310,10 @@ func _jump(delta: float) -> Vector3:
 	return jump_vel
 
 func calc_jump_vel_nojump(delta: float) -> Vector3:
-	return Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity_current * delta)
+	return Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity_default * delta)
 func calc_jump_vel_default() -> Vector3:
 	var jump_vel: Vector3 = Vector3.ZERO
-	if is_on_floor():
+	if is_on_floor() or raycast_down_swim.is_colliding():
 		jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity_default), 0)
 	return jump_vel
 func calc_jump_vel_high() -> Vector3:
@@ -321,10 +343,13 @@ func _process(delta: float):
 			movement_state_current = MovementStates.LAND
 	
 	# adjust player height (crouch or not)
-	#if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER_LAND or movement_state_current == MovementStates.LADDER_WATER:
-	if speed_state_current == SpeedStates.CROUCH or movement_state_current == MovementStates.SWIM or movement_state_current == MovementStates.LADDER_WATER:
-		player_capsule.shape.height -= speed_crouching * delta
-	elif not raycast_up.is_colliding():
-		player_capsule.shape.height += speed_crouching * delta
-	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
+	if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER_LAND or movement_state_current == MovementStates.LADDER_WATER:
+		if speed_state_current == SpeedStates.CROUCH:
+			player_capsule.shape.height -= speed_crouching * delta
+		elif not raycast_up.is_colliding():
+			player_capsule.shape.height += speed_crouching * delta
+		player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
+		
+	elif movement_state_current == MovementStates.SWIM:
+		player_capsule.shape.height = player_height_swimming
 	
