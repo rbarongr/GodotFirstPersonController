@@ -38,7 +38,8 @@ var speed_state_current = SpeedStates.RUN
 
 enum MovementStates {
 	LAND,
-	LADDER,
+	LADDERATTACHED, # the player has attached to the ladder right now
+	LADDER,         # the player is already on the ladder
 	SWIM,
 	FLY
 }
@@ -97,10 +98,13 @@ func _input(event: InputEvent) -> void:
 			speed_state_current = SpeedStates.RUN
 	
 	if Input.is_action_just_pressed("jump_default"):
-		if is_on_floor():
-			jump_state_current = JumpStates.DEFAULT
+		if movement_state_current == MovementStates.LAND:
+			if is_on_floor():
+				jump_state_current = JumpStates.DEFAULT
+			else:
+				jump_state_current = JumpStates.HOLD
 		else:
-			jump_state_current = JumpStates.HOLD
+			jump_state_current = JumpStates.DEFAULT
 	if Input.is_action_just_released("jump_default"):
 		jump_state_current = JumpStates.NO
 	if Input.is_action_just_pressed("jump_high"):
@@ -149,10 +153,16 @@ func _walk(delta: float) -> Vector3:
 		var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
 		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
 	
+	elif movement_state_current == MovementStates.LADDERATTACHED:
+		movement_state_current = MovementStates.LADDER
+		walk_vel = player_walk_ladder(delta)
+	
 	elif movement_state_current == MovementStates.LADDER:
-		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, 0)
-		var walk_dir: Vector3 = Vector3(_forward.x, -1 * move_dir.y, _forward.z).normalized()
-		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
+		walk_vel = player_walk_ladder(delta)
+		
+		if is_on_floor():
+			movement_state_current = MovementStates.LAND
+			ladder_array.clear()
 	
 	elif movement_state_current == MovementStates.SWIM:
 		pass
@@ -172,6 +182,11 @@ func player_adjust_speed() -> void:
 		speed = speed_walk
 	else:
 		speed = speed_run
+
+func player_walk_ladder(delta: float) -> Vector3:
+	var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, 0)
+	var walk_dir: Vector3 = Vector3(_forward.x, -1 * move_dir.y, _forward.z).normalized()
+	return walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
 
 func _gravity(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
@@ -193,11 +208,14 @@ func _gravity(delta: float) -> Vector3:
 	return grav_vel
 
 func _jump(delta: float) -> Vector3:
+	#var jump_vel: Vector3 = Vector3.ZERO
+	
 	if movement_state_current == MovementStates.LAND:
 		
 		if jump_state_current == JumpStates.DEFAULT:
 			jump_state_current = JumpStates.NO
 			jump_vel = calc_jump_vel_default()
+			
 		elif jump_state_current == JumpStates.HIGH:
 			jump_state_current = JumpStates.NO
 			jump_vel = calc_jump_vel_high()
@@ -208,7 +226,21 @@ func _jump(delta: float) -> Vector3:
 			jump_vel = Vector3.ZERO
 		
 	elif movement_state_current == MovementStates.LADDER:
-		movement_state_current == MovementStates.LAND
+		if jump_state_current == JumpStates.NO:
+			# stop any ladder movement if the player jumped into the ladder
+			jump_vel = Vector3.ZERO
+		elif jump_state_current == JumpStates.DEFAULT:
+			jump_state_current = JumpStates.NO
+			movement_state_current = MovementStates.LAND
+			ladder_array.clear()
+			
+		elif jump_state_current == JumpStates.HIGH:
+			jump_state_current = JumpStates.NO
+			movement_state_current = MovementStates.LAND
+			ladder_array.clear()
+			
+			#var _jump_vel: Vector3 = calc_jump_vel_high()
+			#jump_vel = Vector3(_jump_vel)
 		
 	elif movement_state_current == MovementStates.SWIM:
 		pass
@@ -223,10 +255,10 @@ func calc_jump_vel_nojump(delta: float) -> Vector3:
 func calc_jump_vel_default() -> Vector3:
 	var jump_vel: Vector3 = Vector3.ZERO
 	if is_on_floor():
-		jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity_current), 0)
+		jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity_default), 0)
 	return jump_vel
 func calc_jump_vel_high() -> Vector3:
-	return Vector3(0, sqrt(4 * jump_height_high * gravity_current), 0)
+	return Vector3(0, sqrt(4 * jump_height_high * gravity_default), 0)
 
 func _process(delta: float):
 	# this runs a lot better here in _process than in _input

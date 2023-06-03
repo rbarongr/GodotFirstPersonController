@@ -11,13 +11,11 @@ func _process(delta):
 	pass
 
 func _on_body_entered(body):
-	print("ladder entered")
 	if body.name == "Player":
 		body.ladder_array.append(self)
-		body.movement_state_current = body.MovementStates.LADDER
+		body.movement_state_current = body.MovementStates.LADDERATTACHED
 
 func _on_body_exited(body):
-	print("ladder exited")
 	if body.name == "Player":
 		body.ladder_array.erase(self)
 		if body.ladder_array.size() == 0:

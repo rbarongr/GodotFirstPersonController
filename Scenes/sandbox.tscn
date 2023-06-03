@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://2r2xorepwlip"]
 
-[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_nh45c"]
-[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_l3pl6"]
-[ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_oaj6n"]
+[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_gobm6"]
+[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_eikbl"]
+[ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_2dtad"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
 
@@ -14,10 +14,10 @@ background_mode = 2
 sky = SubResource("Sky_edr0k")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p85vg"]
-albedo_texture = ExtResource("2_l3pl6")
+albedo_texture = ExtResource("2_eikbl")
 metallic_specular = 0.0
 roughness = 0.1
-roughness_texture = ExtResource("2_l3pl6")
+roughness_texture = ExtResource("2_eikbl")
 uv1_triplanar = true
 
 [node name="World" type="Node3D"]
@@ -29,20 +29,7 @@ environment = SubResource("Environment_k5onh")
 transform = Transform3D(-0.678961, 0.262875, -0.685499, -0.027831, 0.923814, 0.38183, 0.733646, 0.278326, -0.619918, 0, 6.83834, 0)
 shadow_enabled = true
 
-[node name="Player" parent="." instance=ExtResource("1_nh45c")]
-player_height_default = 2.0
-player_height_crouching = 0.5
-speed_run = 10.0
-speed_walk = 5.0
-speed_crouched = 2.0
-speed_crouching = 10.0
-height_default = 1.5
-height_crouched = 0.5
-acceleration = 10000.0
-jump_height_default = 1.8
-jump_height_high = 3.0
-jump_hold_allowed = true
-camera_sens = 4.0
+[node name="Player" parent="." instance=ExtResource("1_gobm6")]
 
 [node name="Platform" type="Node3D" parent="."]
 
@@ -196,4 +183,4 @@ use_collision = true
 size = Vector3(60.1655, 22.1391, 0.5)
 material = SubResource("StandardMaterial3D_p85vg")
 
-[node name="Ladder" parent="Platform" instance=ExtResource("3_oaj6n")]
+[node name="Ladder" parent="Platform" instance=ExtResource("3_2dtad")]
