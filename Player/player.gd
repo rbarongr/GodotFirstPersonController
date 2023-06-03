@@ -76,11 +76,13 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_released("jump"): jump_hold = false
 	if Input.is_action_just_pressed("jump_secondary"): jumping_secondary = true
 	
+	"""
 	if Input.is_action_just_pressed("flashlight_toggle"):
 		if flashlight.visible:
 			flashlight.hide()
 		else:
 			flashlight.show()
+	"""
 	
 	if Input.is_action_just_pressed("map_toggle"):
 		if camera_fp.current:
@@ -168,6 +170,14 @@ func _jump(delta: float) -> Vector3:
 	return jump_vel
 
 func _process(delta: float):
+	# this runs a lot better here in _process than in _input
+	# https://stackoverflow.com/questions/69981662/godot-input-is-action-just-pressed-runs-twice
+	if Input.is_action_just_pressed("flashlight_toggle"):
+		if flashlight.visible:
+			flashlight.hide()
+		else:
+			flashlight.show()
+	
 	if crouching:
 		player_capsule.shape.height -= speed_crouching * delta
 	elif not raycast_vertical.is_colliding():
