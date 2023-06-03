@@ -18,7 +18,6 @@ class_name Player extends CharacterBody3D
 
 @export_range(0.1, 3.0, 0.1) var jump_height_primary: float = 1.5 # m
 @export_range(0.1, 3.0, 0.1) var jump_height_secondary: float = 3
-@export var jump_secondary_allowed: bool = true
 @export var jump_hold_allowed: bool = true
 
 @export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 4
@@ -46,8 +45,8 @@ var movement_state_current = MovementStates.LAND
 
 enum JumpStates {
 	NO,   # not jumping
-	LOW,  # slow upjump
-	HIGH, # fast upjump
+	SLOW, # slow upjump
+	FAST, # fast upjump
 	HOLD  # stopping your falling, holding you in the air at current height
 }
 var jump_state_current = JumpStates.NO
@@ -173,7 +172,7 @@ func _jump(delta: float) -> Vector3:
 		if is_on_floor():
 			jump_vel = Vector3(0, sqrt(4 * jump_height_primary * gravity), 0)
 		
-	elif jump_secondary_allowed and jumping_secondary:
+	elif jumping_secondary:
 		jumping_secondary = false
 		
 		jump_vel = Vector3(0, sqrt(4 * jump_height_secondary * gravity), 0)
@@ -202,6 +201,7 @@ func _process(delta: float):
 			camera_fp.current = true
 			player_body.visible = false
 	
+	# adjust player height (crouch or not)
 	if speed_state_current == SpeedStates.CROUCH:
 		player_capsule.shape.height -= speed_crouching * delta
 	elif not raycast_vertical.is_colliding():
