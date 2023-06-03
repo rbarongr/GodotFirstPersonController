@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://d04r1xotjp8s"]
+
+[ext_resource type="Script" path="res://Scenes/ladder.gd" id="1_jkr57"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_djpjd"]
+
+[node name="Ladder" type="Area3D"]
+script = ExtResource("1_jkr57")
+
+[node name="VisibleModel" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7704, 11.8602, 17.9897)
+use_collision = true
+radius = 0.1791
+height = 28.3998
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.8794, 0, 18.0217)
+shape = SubResource("BoxShape3D_djpjd")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

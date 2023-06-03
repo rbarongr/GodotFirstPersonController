@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://2r2xorepwlip"]
+[gd_scene load_steps=8 format=3 uid="uid://2r2xorepwlip"]
 
 [ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_nsxyy"]
 [ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_lmc4y"]
+[ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_q1dq0"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
 
@@ -182,8 +183,4 @@ use_collision = true
 size = Vector3(60.1655, 22.1391, 0.5)
 material = SubResource("StandardMaterial3D_p85vg")
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Platform"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7704, 11.8602, 17.9897)
-use_collision = true
-radius = 0.1791
-height = 28.3998
+[node name="Ladder" parent="Platform" instance=ExtResource("3_q1dq0")]

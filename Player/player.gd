@@ -24,9 +24,10 @@ class_name Player extends CharacterBody3D
 
 var speed: float = speed_run
 
-#var jumping: bool = false
-#var jumping_secondary: bool = false
-#var jump_hold: bool = false
+# if we use a ladder, this ladder will be stored in here.
+# this is an array to make sure if you move from one ladder to another
+# the player is not going to switch falsely to MovementStates "LAND" and fall off
+var ladder_array = []
 
 enum SpeedStates {
 	RUN,
@@ -53,7 +54,8 @@ var jump_state_current = JumpStates.NO
 
 var mouse_captured: bool = false
 
-var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity_default: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity_current = gravity_default
 
 var move_dir: Vector2 # Input direction for movement
 var look_dir: Vector2 # Input direction for look/aim
@@ -160,7 +162,7 @@ func _gravity(delta: float) -> Vector3:
 		if jump_hold_allowed and jump_state_current == JumpStates.HOLD:
 			grav_vel = Vector3.ZERO
 		else:
-			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
+			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity_current, 0), gravity_current * delta)
 		
 	if movement_state_current == MovementStates.LADDER:
 		pass
@@ -198,14 +200,14 @@ func _jump(delta: float) -> Vector3:
 	return jump_vel
 
 func calc_jump_vel_nojump(delta: float) -> Vector3:
-	return Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
+	return Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity_current * delta)
 func calc_jump_vel_default() -> Vector3:
 	var jump_vel: Vector3 = Vector3.ZERO
 	if is_on_floor():
-		jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity), 0)
+		jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity_current), 0)
 	return jump_vel
 func calc_jump_vel_high() -> Vector3:
-	return Vector3(0, sqrt(4 * jump_height_high * gravity), 0)
+	return Vector3(0, sqrt(4 * jump_height_high * gravity_current), 0)
 
 func _process(delta: float):
 	# this runs a lot better here in _process than in _input
