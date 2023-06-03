@@ -32,6 +32,20 @@ var jump_hold: bool = false
 var walking: bool = false
 var crouching: bool = false
 
+enum SpeedStates {
+	RUN,
+	WALK,
+	CROUCH
+}
+var speed_state_current = SpeedStates.RUN
+
+enum MovementStates {
+	NORMAL,
+	LADDER,
+	SWIM
+}
+var movement_state_current = MovementStates.NORMAL
+
 var mouse_captured: bool = false
 
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
