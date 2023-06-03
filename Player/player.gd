@@ -174,20 +174,36 @@ func _jump(delta: float) -> Vector3:
 		
 		if jump_state_current == JumpStates.DEFAULT:
 			jump_state_current = JumpStates.NO
-			if is_on_floor():
-				jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity), 0)
-			
+			jump_vel = calc_jump_vel_default()
 		elif jump_state_current == JumpStates.HIGH:
 			jump_state_current = JumpStates.NO
-			jump_vel = Vector3(0, sqrt(4 * jump_height_high * gravity), 0)
-			
+			jump_vel = calc_jump_vel_high()
 		else:
-			jump_vel = Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
+			jump_vel = calc_jump_vel_nojump(delta)
 		
 		if raycast_vertical.is_colliding():
 			jump_vel = Vector3.ZERO
+		
+	if movement_state_current == MovementStates.LADDER:
+		pass
+		
+	if movement_state_current == MovementStates.SWIM:
+		pass
+		
+	if movement_state_current == MovementStates.FLY:
+		pass
 	
 	return jump_vel
+
+func calc_jump_vel_nojump(delta: float) -> Vector3:
+	return Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
+func calc_jump_vel_default() -> Vector3:
+	var jump_vel: Vector3 = Vector3.ZERO
+	if is_on_floor():
+		jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity), 0)
+	return jump_vel
+func calc_jump_vel_high() -> Vector3:
+	return Vector3(0, sqrt(4 * jump_height_high * gravity), 0)
 
 func _process(delta: float):
 	# this runs a lot better here in _process than in _input
