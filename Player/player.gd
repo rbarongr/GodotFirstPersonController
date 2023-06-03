@@ -29,9 +29,6 @@ var jumping: bool = false
 var jumping_secondary: bool = false
 var jump_hold: bool = false
 
-var walking: bool = false
-var crouching: bool = false
-
 enum SpeedStates {
 	RUN,
 	WALK,
@@ -40,11 +37,12 @@ enum SpeedStates {
 var speed_state_current = SpeedStates.RUN
 
 enum MovementStates {
-	NORMAL,
+	LAND,
 	LADDER,
-	SWIM
+	SWIM,
+	FLY
 }
-var movement_state_current = MovementStates.NORMAL
+var movement_state_current = MovementStates.LAND
 
 enum JumpStates {
 	NO,   # not jumping
@@ -83,14 +81,19 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
 	
 	if Input.is_action_pressed("move_walk"):
-		walking = true
+		speed_state_current = SpeedStates.WALK
 	if Input.is_action_just_released("move_walk"):
-		walking = false
-	if Input.is_action_just_released("move_walk"): speed = speed_run
+		if Input.is_action_pressed("move_crouch"):
+			speed_state_current = SpeedStates.CROUCH
+		else:
+			speed_state_current = SpeedStates.RUN
 	if Input.is_action_pressed("move_crouch"):
-		crouching = true
+		speed_state_current = SpeedStates.CROUCH
 	if Input.is_action_just_released("move_crouch"):
-		crouching = false
+		if Input.is_action_pressed("move_walk"):
+			speed_state_current = SpeedStates.WALK
+		else:
+			speed_state_current = SpeedStates.RUN
 	
 	if Input.is_action_just_pressed("jump"):
 		jumping = true
@@ -139,9 +142,9 @@ func _walk(delta: float) -> Vector3:
 	if raycast_vertical.is_colliding():
 		if player_capsule.shape.height < player_height_default:
 			speed = speed_crouched
-	elif crouching:
+	elif speed_state_current == SpeedStates.CROUCH:
 		speed = speed_crouched
-	elif walking:
+	elif speed_state_current == SpeedStates.WALK:
 		speed = speed_walk
 	else:
 		speed = speed_run
@@ -150,7 +153,7 @@ func _walk(delta: float) -> Vector3:
 	return walk_vel
 
 func _gravity(delta: float) -> Vector3:
-	if movement_state_current == MovementStates.NORMAL:
+	if movement_state_current == MovementStates.LAND:
 		if jump_hold_allowed and jump_hold:
 			grav_vel = Vector3.ZERO
 		else:
@@ -199,7 +202,7 @@ func _process(delta: float):
 			camera_fp.current = true
 			player_body.visible = false
 	
-	if crouching:
+	if speed_state_current == SpeedStates.CROUCH:
 		player_capsule.shape.height -= speed_crouching * delta
 	elif not raycast_vertical.is_colliding():
 		player_capsule.shape.height += speed_crouching * delta
