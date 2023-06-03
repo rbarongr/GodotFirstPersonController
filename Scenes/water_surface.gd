@@ -16,11 +16,17 @@ func _on_body_entered(body):
 	
 	if body.name == "Player":
 		#body.ladder_array.append(self)
-		body.movement_state_current = body.MovementStates.SWIM
+		if body.movement_state_current == body.MovementStates.LAND:
+			body.movement_state_current = body.MovementStates.SWIM
+		elif body.movement_state_current == body.MovementStates.LADDER_LAND:
+			body.movement_state_current = body.MovementStates.LADDER_WATER
 
 func _on_body_exited(body):
 	print("not in water")
 	
 	if body.name == "Player":
 		#body.ladder_array.append(self)
-		body.movement_state_current = body.MovementStates.LAND
+		if body.movement_state_current == body.MovementStates.SWIM:
+			body.movement_state_current = body.MovementStates.LAND
+		elif body.movement_state_current == body.MovementStates.LADDER_WATER:
+			body.movement_state_current = body.MovementStates.LADDER_LAND

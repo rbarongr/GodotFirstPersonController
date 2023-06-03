@@ -94,6 +94,12 @@ use_collision = true
 size = Vector3(4, 1, 4)
 material = SubResource("StandardMaterial3D_p85vg")
 
+[node name="Floor14" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.9131, 4.38605, -12.9812)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
 [node name="Floor12" type="CSGBox3D" parent="Platform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.83385, 1.36559, 4.1189)
 use_collision = true
@@ -185,6 +191,13 @@ size = Vector3(60.1655, 22.1391, 0.5)
 material = SubResource("StandardMaterial3D_p85vg")
 
 [node name="Ladder" parent="Platform" instance=ExtResource("3_kdack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7232, 0, 18)
 
 [node name="WaterSurface" parent="Platform" instance=ExtResource("4_wkhyu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, -1.00242, 0)
+
+[node name="Ladder2" parent="Platform" instance=ExtResource("3_kdack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.8586, -21.3388, -10.984)
+
+[node name="Ladder3" parent="Platform" instance=ExtResource("3_kdack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.4787, -25.9497, -0.451653)

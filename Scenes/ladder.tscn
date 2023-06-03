@@ -8,13 +8,13 @@
 script = ExtResource("1_n47bx")
 
 [node name="VisibleModel" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7704, 11.8602, 17.9897)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0493946, 11.8602, -0.120449)
 use_collision = true
 radius = 0.1791
 height = 28.3998
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 26.78, 0, 0, 0, 1, 13.8794, 12.6503, 18.0217)
+transform = Transform3D(1, 0, 0, 0, 26.78, 0, 0, 0, 1, 0.000227928, 12.6503, -0.0884495)
 shape = SubResource("BoxShape3D_djpjd")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
