@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="BasicFPC"
-run/main_scene="res://Sandbox.tscn"
+run/main_scene="res://Scenes/sandbox.tscn"
 config/features=PackedStringArray("4.1")
 config/icon="res://icon.svg"
 
