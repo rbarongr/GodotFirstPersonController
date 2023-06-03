@@ -116,6 +116,12 @@ use_collision = true
 size = Vector3(4, 1, 4)
 material = SubResource("StandardMaterial3D_p85vg")
 
+[node name="Floor13" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.7328, 25.584, 17.8575)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
 [node name="Floor11" type="CSGBox3D" parent="Platform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4658, 3.23984, 17.8575)
 use_collision = true
@@ -175,3 +181,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.9876, -8.07196, 24.8069)
 use_collision = true
 size = Vector3(60.1655, 22.1391, 0.5)
 material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7704, 11.8602, 17.9897)
+use_collision = true
+radius = 0.1791
+height = 28.3998

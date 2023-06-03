@@ -67,7 +67,7 @@ target_position = Vector3(0, 0.4, 0)
 collide_with_areas = true
 
 [node name="CameraMap" type="Camera3D" parent="CShapeHead"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 20, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 40, 0)
 size = 20.0
 
 [node name="VisibleBody" type="CSGSphere3D" parent="."]
