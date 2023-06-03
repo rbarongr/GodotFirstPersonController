@@ -166,6 +166,8 @@ func _gravity(delta: float) -> Vector3:
 		pass
 	if movement_state_current == MovementStates.SWIM:
 		pass
+	if movement_state_current == MovementStates.FLY:
+		pass
 	
 	return grav_vel
 
@@ -184,13 +186,13 @@ func _jump(delta: float) -> Vector3:
 		if raycast_vertical.is_colliding():
 			jump_vel = Vector3.ZERO
 		
-	if movement_state_current == MovementStates.LADDER:
+	elif movement_state_current == MovementStates.LADDER:
+		movement_state_current == MovementStates.LAND
+		
+	elif movement_state_current == MovementStates.SWIM:
 		pass
 		
-	if movement_state_current == MovementStates.SWIM:
-		pass
-		
-	if movement_state_current == MovementStates.FLY:
+	elif movement_state_current == MovementStates.FLY:
 		pass
 	
 	return jump_vel
@@ -222,10 +224,13 @@ func _process(delta: float):
 			camera_fp.current = true
 			player_body.visible = false
 	
+	
 	# adjust player height (crouch or not)
-	if speed_state_current == SpeedStates.CROUCH:
-		player_capsule.shape.height -= speed_crouching * delta
-	elif not raycast_vertical.is_colliding():
-		player_capsule.shape.height += speed_crouching * delta
-	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
+	if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER:
+		
+		if speed_state_current == SpeedStates.CROUCH:
+			player_capsule.shape.height -= speed_crouching * delta
+		elif not raycast_vertical.is_colliding():
+			player_capsule.shape.height += speed_crouching * delta
+		player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
 	
