@@ -75,7 +75,8 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var camera_fp: Camera3D = $CShapeHead/CameraFirstPerson
 @onready var camera_map: Camera3D = $CShapeHead/CameraMap
 @onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
-@onready var raycast_vertical: RayCast3D = $CShapeHead/CollisionRayTop
+@onready var raycast_up: RayCast3D = $CShapeHead/RayTop
+@onready var raycast_down: RayCast3D = $CShapeHead/RayDepth
 @onready var racyast_crosshair: RayCast3D = $CShapeHead/CameraFirstPerson/CollisionRayCrosshair
 
 @onready var player_body: CSGSphere3D = $VisibleBody
@@ -188,7 +189,7 @@ func _walk(delta: float) -> Vector3:
 	return walk_vel
 
 func player_adjust_speed() -> void:
-	if raycast_vertical.is_colliding() and movement_state_current == MovementStates.LAND:
+	if raycast_up.is_colliding() and movement_state_current == MovementStates.LAND:
 		if player_capsule.shape.height < player_height_default:
 			speed = speed_crouched
 	elif speed_state_current == SpeedStates.CROUCH:
@@ -237,7 +238,7 @@ func _jump(delta: float) -> Vector3:
 		else:
 			jump_vel = calc_jump_vel_nojump(delta)
 		
-		if raycast_vertical.is_colliding():
+		if raycast_up.is_colliding():
 			jump_vel = Vector3.ZERO
 		
 	elif movement_state_current == MovementStates.LADDER_LAND or movement_state_current == MovementStates.LADDER_WATER:
@@ -323,7 +324,7 @@ func _process(delta: float):
 	#if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER_LAND or movement_state_current == MovementStates.LADDER_WATER:
 	if speed_state_current == SpeedStates.CROUCH or movement_state_current == MovementStates.SWIM or movement_state_current == MovementStates.LADDER_WATER:
 		player_capsule.shape.height -= speed_crouching * delta
-	elif not raycast_vertical.is_colliding():
+	elif not raycast_up.is_colliding():
 		player_capsule.shape.height += speed_crouching * delta
 	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
 	
