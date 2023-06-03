@@ -47,9 +47,10 @@ enum MovementStates {
 var movement_state_current = MovementStates.NORMAL
 
 enum JumpStates {
-	NO,
-	LOW,
-	HIGH
+	NO,   # not jumping
+	LOW,  # slow upjump
+	HIGH, # fast upjump
+	HOLD  # stopping your falling, holding you in the air at current height
 }
 var jump_state_current = JumpStates.NO
 
