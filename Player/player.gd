@@ -20,6 +20,9 @@ class_name Player extends CharacterBody3D
 @export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
 @export var jump_hold_allowed: bool = true
 
+@export_range(1, 50, 1) var swim_vertical_default = 5
+@export_range(1, 50, 1) var swim_vertical_fast = 10
+
 @export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 4
 
 var speed: float = speed_run
@@ -37,10 +40,12 @@ enum SpeedStates {
 var speed_state_current = SpeedStates.RUN
 
 enum MovementStates {
-	LAND,
-	LADDERATTACHED, # the player has attached to the ladder right now
-	LADDER,         # the player is already on the ladder
-	SWIM,
+	LAND,           # movement on dry land
+	LADDER_LAND_ATTACHED, # the player has attached to the ladder right now
+	LADDER_WATER_ATTACHED, # we need to know where we were before attaching to the ladder in order to know where we have to go back on detach
+	LADDER_LAND,    # the player is already on the ladder, coming from land
+	LADDER_WATER,   # the player is already on the ladder, coming from water
+	SWIM,           # movement under water (or basic flying)
 	FLY
 }
 var movement_state_current = MovementStates.LAND
@@ -109,6 +114,8 @@ func _input(event: InputEvent) -> void:
 		jump_state_current = JumpStates.NO
 	if Input.is_action_just_pressed("jump_high"):
 		jump_state_current = JumpStates.HIGH
+	if Input.is_action_just_released("jump_high"):
+		jump_state_current = JumpStates.NO
 	
 	if camera_map.current:
 		if Input.is_action_pressed("mouse_wheel_up"):
@@ -153,19 +160,27 @@ func _walk(delta: float) -> Vector3:
 		var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
 		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
 	
-	elif movement_state_current == MovementStates.LADDERATTACHED:
-		movement_state_current = MovementStates.LADDER
+	elif movement_state_current == MovementStates.LADDER_LAND_ATTACHED:
+		movement_state_current = MovementStates.LADDER_LAND
+		walk_vel = player_walk_ladder(delta)
+	elif movement_state_current == MovementStates.LADDER_WATER_ATTACHED:
+		movement_state_current = MovementStates.LADDER_WATER
 		walk_vel = player_walk_ladder(delta)
 	
-	elif movement_state_current == MovementStates.LADDER:
+	elif movement_state_current == MovementStates.LADDER_LAND or movement_state_current == MovementStates.LADDER_WATER:
 		walk_vel = player_walk_ladder(delta)
 		
 		if is_on_floor():
-			movement_state_current = MovementStates.LAND
+			if movement_state_current == MovementStates.LADDER_LAND:
+				movement_state_current = MovementStates.LAND
+			elif movement_state_current == MovementStates.LADDER_WATER:
+				movement_state_current = MovementStates.SWIM
 			ladder_array.clear()
 	
 	elif movement_state_current == MovementStates.SWIM:
-		pass
+		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
+		var walk_dir: Vector3 = Vector3(_forward.x, _forward.y, _forward.z).normalized()
+		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
 	
 	elif movement_state_current == MovementStates.FLY:
 		pass
@@ -173,11 +188,12 @@ func _walk(delta: float) -> Vector3:
 	return walk_vel
 
 func player_adjust_speed() -> void:
-	if raycast_vertical.is_colliding():
+	if raycast_vertical.is_colliding() and movement_state_current == MovementStates.LAND:
 		if player_capsule.shape.height < player_height_default:
 			speed = speed_crouched
 	elif speed_state_current == SpeedStates.CROUCH:
-		speed = speed_crouched
+		if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER_LAND:
+			speed = speed_crouched
 	elif speed_state_current == SpeedStates.WALK:
 		speed = speed_walk
 	else:
@@ -197,11 +213,12 @@ func _gravity(delta: float) -> Vector3:
 		else:
 			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity_current, 0), gravity_current * delta)
 		
-	elif movement_state_current == MovementStates.LADDER:
+	elif movement_state_current == MovementStates.LADDER_LAND:
 		gravity_current = 0
 		grav_vel = Vector3.ZERO
 	elif movement_state_current == MovementStates.SWIM:
 		gravity_current = 0
+		grav_vel = Vector3.ZERO
 	elif movement_state_current == MovementStates.FLY:
 		gravity_current = 0
 	
@@ -223,29 +240,46 @@ func _jump(delta: float) -> Vector3:
 		if raycast_vertical.is_colliding():
 			jump_vel = Vector3.ZERO
 		
-	elif movement_state_current == MovementStates.LADDER:
+	elif movement_state_current == MovementStates.LADDER_LAND or movement_state_current == MovementStates.LADDER_WATER:
 		if jump_state_current == JumpStates.NO:
 			# stop any ladder movement if the player jumped into the ladder
 			jump_vel = Vector3.ZERO
 		elif jump_state_current == JumpStates.DEFAULT:
 			jump_state_current = JumpStates.NO
-			movement_state_current = MovementStates.LAND
+			if movement_state_current == MovementStates.LADDER_LAND:
+				movement_state_current = MovementStates.LAND
+			elif movement_state_current == MovementStates.LADDER_WATER:
+				movement_state_current = MovementStates.SWIM
 			ladder_array.clear()
 			
 			# just let go the ladder, otherwise do nothing
 			
 		elif jump_state_current == JumpStates.HIGH:
 			jump_state_current = JumpStates.NO
-			movement_state_current = MovementStates.LAND
+			if movement_state_current == MovementStates.LADDER_LAND:
+				movement_state_current = MovementStates.LAND
+				
+				# launch the player backwards away from the ladder
+				var _forward: Vector3 = camera_fp.transform.basis * Vector3(0, 1, 0)
+				var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
+				jump_vel = walk_vel.move_toward(walk_dir * speed, acceleration * delta)
+				
+			elif movement_state_current == MovementStates.LADDER_WATER:
+				movement_state_current = MovementStates.SWIM
 			ladder_array.clear()
-			
-			# launch the player backwards away from the ladder
-			var _forward: Vector3 = camera_fp.transform.basis * Vector3(0, 1, 0)
-			var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
-			jump_vel = walk_vel.move_toward(walk_dir * speed, acceleration * delta)
 		
 	elif movement_state_current == MovementStates.SWIM:
-		pass
+		if jump_state_current == JumpStates.DEFAULT:
+			var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
+			return walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
+			
+		elif jump_state_current == JumpStates.HIGH:
+			var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
+			return walk_vel.move_toward(walk_dir * swim_vertical_fast, acceleration * delta)
+		
+		elif speed_state_current == SpeedStates.CROUCH:
+			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
+			return walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
 		
 	elif movement_state_current == MovementStates.FLY:
 		pass
@@ -279,12 +313,17 @@ func _process(delta: float):
 			camera_fp.current = true
 			player_body.visible = false
 	
+	if Input.is_action_just_pressed("swim_fly_toggle"):
+		if movement_state_current == MovementStates.LAND:
+			movement_state_current = MovementStates.SWIM
+		else:
+			movement_state_current = MovementStates.LAND
+	
 	# adjust player height (crouch or not)
-	if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER:
-		
-		if speed_state_current == SpeedStates.CROUCH:
-			player_capsule.shape.height -= speed_crouching * delta
-		elif not raycast_vertical.is_colliding():
-			player_capsule.shape.height += speed_crouching * delta
-		player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
+	#if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER_LAND or movement_state_current == MovementStates.LADDER_WATER:
+	if speed_state_current == SpeedStates.CROUCH or movement_state_current == MovementStates.SWIM or movement_state_current == MovementStates.LADDER_WATER:
+		player_capsule.shape.height -= speed_crouching * delta
+	elif not raycast_vertical.is_colliding():
+		player_capsule.shape.height += speed_crouching * delta
+	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
 	
