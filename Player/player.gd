@@ -208,8 +208,6 @@ func _gravity(delta: float) -> Vector3:
 	return grav_vel
 
 func _jump(delta: float) -> Vector3:
-	#var jump_vel: Vector3 = Vector3.ZERO
-	
 	if movement_state_current == MovementStates.LAND:
 		
 		if jump_state_current == JumpStates.DEFAULT:
@@ -234,13 +232,17 @@ func _jump(delta: float) -> Vector3:
 			movement_state_current = MovementStates.LAND
 			ladder_array.clear()
 			
+			# just let go the ladder, otherwise do nothing
+			
 		elif jump_state_current == JumpStates.HIGH:
 			jump_state_current = JumpStates.NO
 			movement_state_current = MovementStates.LAND
 			ladder_array.clear()
 			
-			#var _jump_vel: Vector3 = calc_jump_vel_high()
-			#jump_vel = Vector3(_jump_vel)
+			# launch the player backwards away from the ladder
+			var _forward: Vector3 = camera_fp.transform.basis * Vector3(0, 1, 0)
+			var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
+			jump_vel = walk_vel.move_toward(walk_dir * speed, acceleration * delta)
 		
 	elif movement_state_current == MovementStates.SWIM:
 		pass
@@ -276,7 +278,6 @@ func _process(delta: float):
 		else:
 			camera_fp.current = true
 			player_body.visible = false
-	
 	
 	# adjust player height (crouch or not)
 	if movement_state_current == MovementStates.LAND or movement_state_current == MovementStates.LADDER:
