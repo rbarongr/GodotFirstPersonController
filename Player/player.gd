@@ -46,6 +46,13 @@ enum MovementStates {
 }
 var movement_state_current = MovementStates.NORMAL
 
+enum JumpStates {
+	NO,
+	LOW,
+	HIGH
+}
+var jump_state_current = JumpStates.NO
+
 var mouse_captured: bool = false
 
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -142,10 +149,17 @@ func _walk(delta: float) -> Vector3:
 	return walk_vel
 
 func _gravity(delta: float) -> Vector3:
-	if jump_hold_allowed and jump_hold:
-		grav_vel = Vector3.ZERO
-	else:
-		grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
+	if movement_state_current == MovementStates.NORMAL:
+		if jump_hold_allowed and jump_hold:
+			grav_vel = Vector3.ZERO
+		else:
+			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
+		
+	if movement_state_current == MovementStates.LADDER:
+		pass
+	if movement_state_current == MovementStates.SWIM:
+		pass
+	
 	return grav_vel
 
 func _jump(delta: float) -> Vector3:
