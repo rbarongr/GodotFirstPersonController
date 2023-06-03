@@ -52,6 +52,12 @@ use_collision = true
 size = Vector3(2, 0.5, 6)
 material = SubResource("StandardMaterial3D_p85vg")
 
+[node name="Ramp5" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(-0.000610922, 0.5, 0.866025, 0, 0.866025, -0.5, -0.999999, -0.000305403, -0.000529051, 18.0438, -1.65982, -13.9723)
+use_collision = true
+size = Vector3(2, 0.5, 6)
+material = SubResource("StandardMaterial3D_p85vg")
+
 [node name="Ramp3" type="CSGBox3D" parent="Platform"]
 transform = Transform3D(1, 0, 0, 0, 0.724569, -0.689202, 0, 0.689202, 0.724569, -0.988854, 0.749956, -2.74457)
 use_collision = true
