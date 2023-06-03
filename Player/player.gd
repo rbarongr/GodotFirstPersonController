@@ -16,17 +16,17 @@ class_name Player extends CharacterBody3D
 
 @export_range(10, 400, 1) var acceleration: float = 10000 # m/s^2
 
-@export_range(0.1, 3.0, 0.1) var jump_height_primary: float = 1.5 # m
-@export_range(0.1, 3.0, 0.1) var jump_height_secondary: float = 3
+@export_range(0.1, 3.0, 0.1) var jump_height_default: float = 1.8 # m
+@export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
 @export var jump_hold_allowed: bool = true
 
 @export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 4
 
 var speed: float = speed_run
 
-var jumping: bool = false
-var jumping_secondary: bool = false
-var jump_hold: bool = false
+#var jumping: bool = false
+#var jumping_secondary: bool = false
+#var jump_hold: bool = false
 
 enum SpeedStates {
 	RUN,
@@ -44,10 +44,10 @@ enum MovementStates {
 var movement_state_current = MovementStates.LAND
 
 enum JumpStates {
-	NO,   # not jumping
-	SLOW, # slow upjump
-	FAST, # fast upjump
-	HOLD  # stopping your falling, holding you in the air at current height
+	NO,      # not jumping
+	DEFAULT, # slow upjump
+	HIGH,    # fast upjump
+	HOLD     # stopping your falling, holding you in the air at current height
 }
 var jump_state_current = JumpStates.NO
 
@@ -94,11 +94,15 @@ func _input(event: InputEvent) -> void:
 		else:
 			speed_state_current = SpeedStates.RUN
 	
-	if Input.is_action_just_pressed("jump"):
-		jumping = true
-		jump_hold = true
-	if Input.is_action_just_released("jump"): jump_hold = false
-	if Input.is_action_just_pressed("jump_secondary"): jumping_secondary = true
+	if Input.is_action_just_pressed("jump_default"):
+		if is_on_floor():
+			jump_state_current = JumpStates.DEFAULT
+		else:
+			jump_state_current = JumpStates.HOLD
+	if Input.is_action_just_released("jump_default"):
+		jump_state_current = JumpStates.NO
+	if Input.is_action_just_pressed("jump_high"):
+		jump_state_current = JumpStates.HIGH
 	
 	if camera_map.current:
 		if Input.is_action_pressed("mouse_wheel_up"):
@@ -153,7 +157,7 @@ func _walk(delta: float) -> Vector3:
 
 func _gravity(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
-		if jump_hold_allowed and jump_hold:
+		if jump_hold_allowed and jump_state_current == JumpStates.HOLD:
 			grav_vel = Vector3.ZERO
 		else:
 			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
@@ -166,21 +170,22 @@ func _gravity(delta: float) -> Vector3:
 	return grav_vel
 
 func _jump(delta: float) -> Vector3:
-	if jumping:
-		jumping = false
+	if movement_state_current == MovementStates.LAND:
 		
-		if is_on_floor():
-			jump_vel = Vector3(0, sqrt(4 * jump_height_primary * gravity), 0)
+		if jump_state_current == JumpStates.DEFAULT:
+			jump_state_current = JumpStates.NO
+			if is_on_floor():
+				jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity), 0)
+			
+		elif jump_state_current == JumpStates.HIGH:
+			jump_state_current = JumpStates.NO
+			jump_vel = Vector3(0, sqrt(4 * jump_height_high * gravity), 0)
+			
+		else:
+			jump_vel = Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
 		
-	elif jumping_secondary:
-		jumping_secondary = false
-		
-		jump_vel = Vector3(0, sqrt(4 * jump_height_secondary * gravity), 0)
-	else:
-		jump_vel = Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
-	
-	if raycast_vertical.is_colliding():
-		jump_vel = Vector3.ZERO
+		if raycast_vertical.is_colliding():
+			jump_vel = Vector3.ZERO
 	
 	return jump_vel
 
