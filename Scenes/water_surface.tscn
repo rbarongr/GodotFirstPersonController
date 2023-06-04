@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://chascookfeke3"]
 
-[ext_resource type="Script" path="res://Scenes/water_surface.gd" id="1_o858g"]
+[ext_resource type="Script" path="res://Scenes/water_surface.gd" id="1_ryilp"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_8qd6h"]
 
 [node name="WaterSurface" type="Area3D"]
-script = ExtResource("1_o858g")
+script = ExtResource("1_ryilp")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("WorldBoundaryShape3D_8qd6h")

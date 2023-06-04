@@ -15,7 +15,8 @@ class_name Player extends CharacterBody3D
 @export_range(0, 10, 1) var height_default: float = 1.5
 @export_range(0, 10, 1) var height_crouched: float = 0.5
 
-@export_range(10, 400, 1) var acceleration: float = 10000 # m/s^2
+@export_range(10, 400, 1) var acceleration: float = 400 #10000 # m/s^2
+@export_range(0.01, 10, 1) var water_drag: float = 1 # the deceleration when the player jumps into water
 
 @export_range(0.1, 3.0, 0.1) var jump_height_default: float = 2 # m
 @export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
@@ -62,8 +63,7 @@ var jump_state_current = JumpStates.NO
 
 var mouse_captured: bool = false
 
-var gravity_default: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-var gravity_current = gravity_default
+var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 var move_dir: Vector2 # Input direction for movement
 var look_dir: Vector2 # Input direction for look/aim
@@ -212,21 +212,25 @@ func player_walk_ladder(delta: float) -> Vector3:
 
 func _gravity(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
-		gravity_current = gravity_default
+		#gravity_current = gravity_default
 		
 		if jump_hold_allowed and jump_state_current == JumpStates.HOLD:
 			grav_vel = Vector3.ZERO
 		else:
-			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity_current, 0), gravity_current * delta)
+			grav_vel = Vector3.ZERO if is_on_floor() else grav_vel.move_toward(Vector3(0, velocity.y - gravity, 0), gravity * delta)
 		
 	elif movement_state_current == MovementStates.LADDER_LAND:
-		gravity_current = 0
+		#gravity_current = 0
 		grav_vel = Vector3.ZERO
+	elif movement_state_current == MovementStates.WATER_ENTERED:
+		#grav_vel.move_toward(Vector3(0, 0, 0), delta)
+		pass
 	elif movement_state_current == MovementStates.SWIM:
-		gravity_current = 0
-		grav_vel = Vector3.ZERO
+		grav_vel = grav_vel.move_toward(Vector3.ZERO, water_drag)
 	elif movement_state_current == MovementStates.FLY:
-		gravity_current = 0
+		pass
+	
+	print("# ", grav_vel)
 	
 	return grav_vel
 
@@ -277,14 +281,16 @@ func _jump(delta: float) -> Vector3:
 	elif movement_state_current == MovementStates.WATER_ENTERED:
 		movement_state_current = MovementStates.SWIM
 		
-		var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
-		jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta/2)
+		#var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
+		#jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta/2)
 	
 	elif movement_state_current == MovementStates.SWIM:
 		# dont bounce around on the water surface as in halflife1
 		if jump_state_current == JumpStates.NO:
-			jump_vel = calc_jump_vel_nojump(delta)
+			print("nojump")
+			#jump_vel = calc_jump_vel_nojump(delta)
 		elif jump_state_current == JumpStates.DEFAULT:
+			print("jump")
 			if not raycast_down_swim.is_colliding():
 				var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
 				jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
@@ -307,17 +313,17 @@ func _jump(delta: float) -> Vector3:
 	elif movement_state_current == MovementStates.FLY:
 		pass
 	
+	print("jump_vel: ", jump_vel)
 	return jump_vel
 
 func calc_jump_vel_nojump(delta: float) -> Vector3:
-	return Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity_default * delta)
+	return Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
 func calc_jump_vel_default() -> Vector3:
-	var jump_vel: Vector3 = Vector3.ZERO
 	if is_on_floor() or raycast_down_swim.is_colliding():
-		jump_vel = Vector3(0, sqrt(4 * jump_height_default * gravity_default), 0)
-	return jump_vel
+		return Vector3(0, sqrt(4 * jump_height_default * gravity), 0)
+	return Vector3.ZERO
 func calc_jump_vel_high() -> Vector3:
-	return Vector3(0, sqrt(4 * jump_height_high * gravity_default), 0)
+	return Vector3(0, sqrt(4 * jump_height_high * gravity), 0)
 
 func _process(delta: float):
 	# this runs a lot better here in _process than in _input
