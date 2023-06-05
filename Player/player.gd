@@ -18,6 +18,7 @@ class_name Player extends CharacterBody3D
 @export_range(10, 400, 1) var acceleration_land: float = 400 #10000 # m/s^2
 @export_range(10, 400, 1) var acceleration_water: float = 200
 @export_range(0.01, 10, 1) var water_drag: float = 1 # the deceleration when the player jumps into water
+@export_range(-0.5, -4, -2) var water_depth_separator: float = -2 # the depth of water below that space bar will not jump but just swim upwards
 
 @export_range(0.1, 3.0, 0.1) var jump_height_default: float = 2 # m
 @export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
@@ -56,7 +57,7 @@ var movement_state_current = MovementStates.LAND
 
 enum JumpStates {
 	NO,      # not jumping
-	DEFAULT, # slow upjump
+	UP, # slow upjump
 	DOWN,    # slow downjump (swimming only)
 	HIGH,    # fast upjump
 	HOLD     # stopping your falling, holding you in the air at current height
@@ -80,7 +81,8 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var camera_map: Camera3D = $CShapeHead/CameraMap
 @onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
 @onready var raycast_up: RayCast3D = $CShapeHead/RayTop
-@onready var raycast_down_swim: RayCast3D = $CShapeHead/RayDepthSwim
+@onready var raycast_up_swim: RayCast3D = $CShapeHead/RayUpSwim
+@onready var raycast_down_swim: RayCast3D = $CShapeHead/RayDownSwim
 @onready var racyast_crosshair: RayCast3D = $CShapeHead/CameraFirstPerson/CollisionRayCrosshair
 
 @onready var player_body: CSGSphere3D = $VisibleBody
@@ -116,11 +118,11 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("jump_default"):
 		if movement_state_current == MovementStates.LAND:
 			if is_on_floor():
-				jump_state_current = JumpStates.DEFAULT
+				jump_state_current = JumpStates.UP
 			else:
 				jump_state_current = JumpStates.HOLD
 		else:
-			jump_state_current = JumpStates.DEFAULT
+			jump_state_current = JumpStates.UP
 	if Input.is_action_just_released("jump_default"):
 		jump_state_current = JumpStates.NO
 	if Input.is_action_just_pressed("jump_high"):
@@ -243,7 +245,7 @@ func _gravity(delta: float) -> Vector3:
 func _jump(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
 		
-		if jump_state_current == JumpStates.DEFAULT:
+		if jump_state_current == JumpStates.UP:
 			jump_state_current = JumpStates.NO
 			jump_vel = calc_jump_vel_default()
 			
@@ -260,7 +262,7 @@ func _jump(delta: float) -> Vector3:
 		if jump_state_current == JumpStates.NO:
 			# stop any ladder movement if the player jumped into the ladder
 			jump_vel = Vector3.ZERO
-		elif jump_state_current == JumpStates.DEFAULT:
+		elif jump_state_current == JumpStates.UP:
 			jump_state_current = JumpStates.NO
 			if movement_state_current == MovementStates.LADDER_LAND:
 				movement_state_current = MovementStates.LAND
@@ -291,18 +293,27 @@ func _jump(delta: float) -> Vector3:
 		#jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta/2)
 	
 	elif movement_state_current == MovementStates.SWIM:
+		#print("swimray: ", raycast_down_swim.is_colliding())
+		#print("swimray: ", raycast_down_swim.get_collision_point().y)
+		#print("upray: ", raycast_up_swim.is_colliding())
 		# dont bounce around on the water surface as in halflife1 ...
 		if jump_state_current == JumpStates.NO:
 			jump_vel = calc_jump_vel_nojump(delta)
 		
-		elif jump_state_current == JumpStates.DEFAULT:
-			if not raycast_down_swim.is_colliding():
+		elif jump_state_current == JumpStates.UP:
+			print("swimray: ", raycast_down_swim.get_collision_point().y)
+			#if not raycast_down_swim.is_colliding():
+			if raycast_down_swim.get_collision_point().y < water_depth_separator:
+				print("if")
 				var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
 				jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
 				
 			else:
+				print("else")
 				# jump of the water surface
 				jump_vel = calc_jump_vel_default()
+				#var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
+				#jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
 		
 		elif jump_state_current == JumpStates.DOWN:
 			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
