@@ -15,7 +15,8 @@ class_name Player extends CharacterBody3D
 @export_range(0, 10, 1) var height_default: float = 1.5
 @export_range(0, 10, 1) var height_crouched: float = 0.5
 
-@export_range(10, 400, 1) var acceleration: float = 400 #10000 # m/s^2
+@export_range(10, 400, 1) var acceleration_land: float = 400 #10000 # m/s^2
+@export_range(10, 400, 1) var acceleration_water: float = 200
 @export_range(0.01, 10, 1) var water_drag: float = 1 # the deceleration when the player jumps into water
 
 @export_range(0.1, 3.0, 0.1) var jump_height_default: float = 2 # m
@@ -56,6 +57,7 @@ var movement_state_current = MovementStates.LAND
 enum JumpStates {
 	NO,      # not jumping
 	DEFAULT, # slow upjump
+	DOWN,    # slow downjump (swimming only)
 	HIGH,    # fast upjump
 	HOLD     # stopping your falling, holding you in the air at current height
 }
@@ -98,12 +100,18 @@ func _input(event: InputEvent) -> void:
 		else:
 			speed_state_current = SpeedStates.RUN
 	if Input.is_action_pressed("move_crouch"):
-		speed_state_current = SpeedStates.CROUCH
-	if Input.is_action_just_released("move_crouch"):
-		if Input.is_action_pressed("move_walk"):
-			speed_state_current = SpeedStates.WALK
+		if movement_state_current == MovementStates.SWIM:
+			jump_state_current = JumpStates.DOWN
 		else:
-			speed_state_current = SpeedStates.RUN
+			speed_state_current = SpeedStates.CROUCH
+	if Input.is_action_just_released("move_crouch"):
+		if movement_state_current == MovementStates.SWIM:
+			jump_state_current = JumpStates.NO
+		else:
+			if Input.is_action_pressed("move_walk"):
+				speed_state_current = SpeedStates.WALK
+			else:
+				speed_state_current = SpeedStates.RUN
 	
 	if Input.is_action_just_pressed("jump_default"):
 		if movement_state_current == MovementStates.LAND:
@@ -161,7 +169,7 @@ func _walk(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
 		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
 		var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
-		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
+		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
 	
 	elif movement_state_current == MovementStates.LADDER_LAND_ATTACHED:
 		movement_state_current = MovementStates.LADDER_LAND
@@ -186,7 +194,7 @@ func _walk(delta: float) -> Vector3:
 		
 		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
 		var walk_dir: Vector3 = Vector3(_forward.x, _forward.y, _forward.z).normalized()
-		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
+		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_water * delta)
 	
 	elif movement_state_current == MovementStates.FLY:
 		pass
@@ -208,7 +216,7 @@ func player_adjust_speed() -> void:
 func player_walk_ladder(delta: float) -> Vector3:
 	var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, 0)
 	var walk_dir: Vector3 = Vector3(_forward.x, -1 * move_dir.y, _forward.z).normalized()
-	return walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration * delta)
+	return walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
 
 func _gravity(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
@@ -229,8 +237,6 @@ func _gravity(delta: float) -> Vector3:
 		grav_vel = grav_vel.move_toward(Vector3.ZERO, water_drag)
 	elif movement_state_current == MovementStates.FLY:
 		pass
-	
-	print("# ", grav_vel)
 	
 	return grav_vel
 
@@ -272,7 +278,7 @@ func _jump(delta: float) -> Vector3:
 				# launch the player backwards away from the ladder
 				var _forward: Vector3 = camera_fp.transform.basis * Vector3(0, 1, 0)
 				var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
-				jump_vel = walk_vel.move_toward(walk_dir * speed, acceleration * delta)
+				jump_vel = walk_vel.move_toward(walk_dir * speed, acceleration_land * delta)
 				
 			elif movement_state_current == MovementStates.LADDER_WATER:
 				movement_state_current = MovementStates.SWIM
@@ -285,35 +291,39 @@ func _jump(delta: float) -> Vector3:
 		#jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta/2)
 	
 	elif movement_state_current == MovementStates.SWIM:
-		# dont bounce around on the water surface as in halflife1
+		# dont bounce around on the water surface as in halflife1 ...
 		if jump_state_current == JumpStates.NO:
-			print("nojump")
-			#jump_vel = calc_jump_vel_nojump(delta)
+			jump_vel = calc_jump_vel_nojump(delta)
+		
 		elif jump_state_current == JumpStates.DEFAULT:
-			print("jump")
 			if not raycast_down_swim.is_colliding():
 				var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
-				jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
+				jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
 				
 			else:
 				# jump of the water surface
 				jump_vel = calc_jump_vel_default()
-			
+		
+		elif jump_state_current == JumpStates.DOWN:
+			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
+			jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
+		
 		elif jump_state_current == JumpStates.HIGH:
 			var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
-			jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_fast, acceleration * delta)
+			jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_fast, acceleration_water * delta)
 		
+		"""
 		if speed_state_current != SpeedStates.CROUCH and jump_state_current != JumpStates.DEFAULT:
 			#jump_vel = Vector3.ZERO
 			jump_vel = calc_jump_vel_nojump(delta)
 		elif speed_state_current == SpeedStates.CROUCH:
 			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
-			jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta)
+			jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
+		"""
 		
 	elif movement_state_current == MovementStates.FLY:
 		pass
 	
-	print("jump_vel: ", jump_vel)
 	return jump_vel
 
 func calc_jump_vel_nojump(delta: float) -> Vector3:
