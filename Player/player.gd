@@ -49,7 +49,6 @@ enum MovementStates {
 	LADDER_WATER_ATTACHED, # we need to know where we were before attaching to the ladder in order to know where we have to go back on detach
 	LADDER_LAND,    # the player is already on the ladder, coming from land
 	LADDER_WATER,   # the player is already on the ladder, coming from water
-	WATER_ENTERED,   # the player has entered water
 	SWIM,           # movement under water (or basic flying)
 	FLY
 }
@@ -81,7 +80,6 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var camera_map: Camera3D = $CShapeHead/CameraMap
 @onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
 @onready var raycast_up: RayCast3D = $CShapeHead/RayTop
-@onready var raycast_up_swim: RayCast3D = $CShapeHead/RayUpSwim
 @onready var raycast_down_swim: RayCast3D = $CShapeHead/RayDownSwim
 @onready var racyast_crosshair: RayCast3D = $CShapeHead/CameraFirstPerson/CollisionRayCrosshair
 
@@ -101,14 +99,17 @@ func _input(event: InputEvent) -> void:
 			speed_state_current = SpeedStates.CROUCH
 		else:
 			speed_state_current = SpeedStates.RUN
-	if Input.is_action_pressed("move_crouch"):
+	if Input.is_action_just_pressed("move_crouch"):
 		if movement_state_current == MovementStates.SWIM:
 			jump_state_current = JumpStates.DOWN
 		else:
 			speed_state_current = SpeedStates.CROUCH
 	if Input.is_action_just_released("move_crouch"):
 		if movement_state_current == MovementStates.SWIM:
-			jump_state_current = JumpStates.NO
+			if Input.is_action_pressed("jump_default"):
+				jump_state_current = JumpStates.UP
+			else:
+				jump_state_current = JumpStates.NO
 		else:
 			if Input.is_action_pressed("move_walk"):
 				speed_state_current = SpeedStates.WALK
@@ -124,7 +125,13 @@ func _input(event: InputEvent) -> void:
 		else:
 			jump_state_current = JumpStates.UP
 	if Input.is_action_just_released("jump_default"):
-		jump_state_current = JumpStates.NO
+		if movement_state_current == MovementStates.SWIM:
+			if Input.is_action_pressed("move_crouch"):
+				jump_state_current = JumpStates.DOWN
+			else:
+				jump_state_current = JumpStates.NO
+		else:
+			jump_state_current = JumpStates.NO
 	if Input.is_action_just_pressed("jump_high"):
 		jump_state_current = JumpStates.HIGH
 	if Input.is_action_just_released("jump_high"):
@@ -232,9 +239,7 @@ func _gravity(delta: float) -> Vector3:
 	elif movement_state_current == MovementStates.LADDER_LAND:
 		#gravity_current = 0
 		grav_vel = Vector3.ZERO
-	elif movement_state_current == MovementStates.WATER_ENTERED:
-		#grav_vel.move_toward(Vector3(0, 0, 0), delta)
-		pass
+	
 	elif movement_state_current == MovementStates.SWIM:
 		grav_vel = grav_vel.move_toward(Vector3.ZERO, water_drag)
 	elif movement_state_current == MovementStates.FLY:
@@ -244,7 +249,6 @@ func _gravity(delta: float) -> Vector3:
 
 func _jump(delta: float) -> Vector3:
 	if movement_state_current == MovementStates.LAND:
-		
 		if jump_state_current == JumpStates.UP:
 			jump_state_current = JumpStates.NO
 			jump_vel = calc_jump_vel_default()
@@ -286,34 +290,20 @@ func _jump(delta: float) -> Vector3:
 				movement_state_current = MovementStates.SWIM
 			ladder_array.clear()
 	
-	elif movement_state_current == MovementStates.WATER_ENTERED:
-		movement_state_current = MovementStates.SWIM
-		
-		#var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
-		#jump_vel = walk_vel.move_toward(walk_dir * swim_vertical_default, acceleration * delta/2)
-	
 	elif movement_state_current == MovementStates.SWIM:
-		#print("swimray: ", raycast_down_swim.is_colliding())
-		#print("swimray: ", raycast_down_swim.get_collision_point().y)
-		#print("upray: ", raycast_up_swim.is_colliding())
 		# dont bounce around on the water surface as in halflife1 ...
 		if jump_state_current == JumpStates.NO:
 			jump_vel = calc_jump_vel_nojump(delta)
 		
 		elif jump_state_current == JumpStates.UP:
-			print("swimray: ", raycast_down_swim.get_collision_point().y)
-			#if not raycast_down_swim.is_colliding():
 			if raycast_down_swim.get_collision_point().y < water_depth_separator:
-				print("if")
+				# swim upward under water
 				var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
 				jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
 				
 			else:
-				print("else")
 				# jump of the water surface
 				jump_vel = calc_jump_vel_default()
-				#var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
-				#jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
 		
 		elif jump_state_current == JumpStates.DOWN:
 			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
@@ -347,6 +337,12 @@ func calc_jump_vel_high() -> Vector3:
 	return Vector3(0, sqrt(4 * jump_height_high * gravity), 0)
 
 func _process(delta: float):
+	# check for consistency (in case we ran into a bug before)
+	if raycast_down_swim.get_collision_point().y < water_depth_separator:
+		if movement_state_current != MovementStates.SWIM:
+			movement_state_current = MovementStates.SWIM
+			print("BUG: We are under Water but not marked as 'SWIM'!")
+	
 	# this runs a lot better here in _process than in _input
 	# https://stackoverflow.com/questions/69981662/godot-input-is-action-just-pressed-runs-twice
 	if Input.is_action_just_pressed("flashlight_toggle"):
