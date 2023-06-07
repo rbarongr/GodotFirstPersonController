@@ -14,15 +14,15 @@ func _process(delta):
 func _on_body_entered(body):
 	if body.name == "Player":
 		#body.ladder_array.append(self)
-		if body.movement_state_current == body.MovementStates.LAND:
-			body.movement_state_current = body.MovementStates.SWIM
-		elif body.movement_state_current == body.MovementStates.LADDER_LAND:
-			body.movement_state_current = body.MovementStates.LADDER_WATER
+		if body.state_movement_current == body.MovementStates.LAND:
+			body.state_movement_current = body.MovementStates.SWIM
+		elif body.state_movement_current == body.MovementStates.LADDER_LAND:
+			body.state_movement_current = body.MovementStates.LADDER_WATER
 
 func _on_body_exited(body):
 	if body.name == "Player":
 		#body.ladder_array.append(self)
-		if body.movement_state_current == body.MovementStates.SWIM:
-			body.movement_state_current = body.MovementStates.LAND
-		elif body.movement_state_current == body.MovementStates.LADDER_WATER:
-			body.movement_state_current = body.MovementStates.LADDER_LAND
+		if body.state_movement_current == body.MovementStates.SWIM:
+			body.state_movement_current = body.MovementStates.LAND
+		elif body.state_movement_current == body.MovementStates.LADDER_WATER:
+			body.state_movement_current = body.MovementStates.LADDER_LAND
