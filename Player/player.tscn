@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://cdk6hwb4hi2wc"]
 
-[ext_resource type="Script" path="res://Player/player.gd" id="1_mx6cm"]
-[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_rywee"]
-[ext_resource type="Script" path="res://Player/FPSCounter.gd" id="3_yxcuq"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_bk3t0"]
+[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_2ylbr"]
+[ext_resource type="Script" path="res://Player/FPSCounter.gd" id="3_8ec1p"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.3
@@ -14,7 +14,7 @@ radius = 0.096856
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ru8h1"]
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_mx6cm")
+script = ExtResource("1_bk3t0")
 
 [node name="CShapeBody" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -56,7 +56,7 @@ size_flags_vertical = 4
 
 [node name="TextureRect" type="TextureRect" parent="CShapeHead/CameraFirstPerson/CenterContainer"]
 layout_mode = 2
-texture = ExtResource("2_rywee")
+texture = ExtResource("2_2ylbr")
 stretch_mode = 5
 
 [node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFirstPerson"]
@@ -102,4 +102,4 @@ height = 0.627514
 [node name="FPSCounter" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
-script = ExtResource("3_yxcuq")
+script = ExtResource("3_8ec1p")

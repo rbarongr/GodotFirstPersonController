@@ -314,6 +314,15 @@ func _jump(delta: float) -> Vector3:
 			var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
 			jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_fast, acceleration_water * delta)
 		
+		"""
+		if state_speed_current != SpeedStates.CROUCH and state_jump_current != JumpStates.DEFAULT:
+			#jump_vel = Vector3.ZERO
+			jump_vel = calc_jump_vel_nojump(delta)
+		elif state_speed_current == SpeedStates.CROUCH:
+			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
+			jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
+		"""
+		
 	elif state_movement_current == MovementStates.FLY:
 		pass
 	
