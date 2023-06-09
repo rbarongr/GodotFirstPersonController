@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://cdk6hwb4hi2wc"]
 
-[ext_resource type="Script" path="res://Player/player.gd" id="1_bk3t0"]
-[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_2ylbr"]
-[ext_resource type="Script" path="res://Player/FPSCounter.gd" id="3_8ec1p"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_dh3lb"]
+[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_ifcpj"]
+[ext_resource type="Script" path="res://Player/FPSCounter.gd" id="3_05ujq"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.3
@@ -14,11 +14,17 @@ radius = 0.096856
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ru8h1"]
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_bk3t0")
+script = ExtResource("1_dh3lb")
 
 [node name="CShapeBody" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_3rsb5")
+
+[node name="RayForwardStairsUpper" type="RayCast3D" parent="CShapeBody"]
+transform = Transform3D(1, 0, 0, 0, -3.0598e-08, -1, 0, 0.7, -4.37114e-08, 0, -0.396206, 0)
+
+[node name="RayForwardStairsLower" type="RayCast3D" parent="CShapeBody"]
+transform = Transform3D(1, 0, 0, 0, 0.0239821, -0.99765, 0, 0.349177, 0.0685202, 0, -0.875752, 0)
 
 [node name="CShapeHead" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49999, 0)
@@ -56,7 +62,7 @@ size_flags_vertical = 4
 
 [node name="TextureRect" type="TextureRect" parent="CShapeHead/CameraFirstPerson/CenterContainer"]
 layout_mode = 2
-texture = ExtResource("2_2ylbr")
+texture = ExtResource("2_ifcpj")
 stretch_mode = 5
 
 [node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFirstPerson"]
@@ -102,4 +108,4 @@ height = 0.627514
 [node name="FPSCounter" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
-script = ExtResource("3_8ec1p")
+script = ExtResource("3_05ujq")

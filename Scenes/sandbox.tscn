@@ -1,9 +1,9 @@
 [gd_scene load_steps=9 format=3 uid="uid://2r2xorepwlip"]
 
-[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_i3uby"]
-[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_2blcu"]
-[ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_5xjem"]
-[ext_resource type="PackedScene" uid="uid://chascookfeke3" path="res://Scenes/water_surface.tscn" id="4_g5611"]
+[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_ekqmw"]
+[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_chihh"]
+[ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_c7v0x"]
+[ext_resource type="PackedScene" uid="uid://chascookfeke3" path="res://Scenes/water_surface.tscn" id="4_u2laq"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
 
@@ -15,10 +15,10 @@ background_mode = 2
 sky = SubResource("Sky_edr0k")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p85vg"]
-albedo_texture = ExtResource("2_2blcu")
+albedo_texture = ExtResource("2_chihh")
 metallic_specular = 0.0
 roughness = 0.1
-roughness_texture = ExtResource("2_2blcu")
+roughness_texture = ExtResource("2_chihh")
 uv1_triplanar = true
 
 [node name="World" type="Node3D"]
@@ -30,7 +30,7 @@ environment = SubResource("Environment_k5onh")
 transform = Transform3D(-0.678961, 0.262875, -0.685499, -0.027831, 0.923814, 0.38183, 0.733646, 0.278326, -0.619918, 0, 6.83834, 0)
 shadow_enabled = true
 
-[node name="Player" parent="." instance=ExtResource("1_i3uby")]
+[node name="Player" parent="." instance=ExtResource("1_ekqmw")]
 
 [node name="Platform" type="Node3D" parent="."]
 
@@ -136,8 +136,62 @@ use_collision = true
 size = Vector3(4, 1, 4)
 material = SubResource("StandardMaterial3D_p85vg")
 
+[node name="Floor20" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.05562, 0.5, 11.3855)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor22" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.99671, 0.5, 10.4255)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor23" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.99671, 0.934523, 9.89253)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor21" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.03934, -0.0655465, 11.3855)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor7" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.99636, 0.5, -8.98477)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor6" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, -0.0608954, -8.99081)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
 [node name="Floor5" type="CSGBox3D" parent="Platform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.5, -13)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor17" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.5, -8.98913)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor19" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.45593, 0.999209, -8.98913)
+use_collision = true
+size = Vector3(4, 1, 4)
+material = SubResource("StandardMaterial3D_p85vg")
+
+[node name="Floor18" type="CSGBox3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.99375, 1.92521, -8.98913)
 use_collision = true
 size = Vector3(4, 1, 4)
 material = SubResource("StandardMaterial3D_p85vg")
@@ -244,14 +298,14 @@ use_collision = true
 size = Vector3(60.1655, 22.1391, 0.5)
 material = SubResource("StandardMaterial3D_p85vg")
 
-[node name="Ladder" parent="Platform" instance=ExtResource("3_5xjem")]
+[node name="Ladder" parent="Platform" instance=ExtResource("3_c7v0x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7232, 0, 18)
 
-[node name="WaterSurface" parent="Platform" instance=ExtResource("4_g5611")]
+[node name="WaterSurface" parent="Platform" instance=ExtResource("4_u2laq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, -1.00242, 0)
 
-[node name="Ladder2" parent="Platform" instance=ExtResource("3_5xjem")]
+[node name="Ladder2" parent="Platform" instance=ExtResource("3_c7v0x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.8586, -21.3388, -10.984)
 
-[node name="Ladder3" parent="Platform" instance=ExtResource("3_5xjem")]
+[node name="Ladder3" parent="Platform" instance=ExtResource("3_c7v0x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.4787, -25.9497, -0.451653)

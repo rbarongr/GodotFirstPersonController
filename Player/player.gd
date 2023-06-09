@@ -22,6 +22,7 @@ class_name Player extends CharacterBody3D
 
 @export_range(0.1, 3.0, 0.1) var jump_height_default: float = 2 # m
 @export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
+@export_range(0.1, 2.0, 0.8) var jump_height_stairs: float = 1
 @export var jump_hold_allowed: bool = true
 
 @export_range(1, 50, 1) var swim_vertical_default = 5
@@ -81,6 +82,8 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
 @onready var raycast_up: RayCast3D = $CShapeHead/RayTop
 @onready var raycast_down_swim: RayCast3D = $CShapeHead/RayDownSwim
+@onready var raycast_stairs_upper: RayCast3D = $CShapeBody/RayForwardStairsUpper
+@onready var raycast_stairs_lower: RayCast3D = $CShapeBody/RayForwardStairsLower
 @onready var racyast_crosshair: RayCast3D = $CShapeHead/CameraFirstPerson/CollisionRayCrosshair
 
 @onready var player_body: CSGSphere3D = $VisibleBody
@@ -258,7 +261,15 @@ func _jump(delta: float) -> Vector3:
 			state_jump_current = JumpStates.NO
 			jump_vel = calc_jump_vel_high()
 		else:
-			jump_vel = calc_jump_vel_nojump(delta)
+			# autojump over small stairs
+			if raycast_stairs_lower.is_colliding():
+				print("lower")
+				if not raycast_stairs_upper.is_colliding():
+					jump_vel = Vector3(0, sqrt(4 * jump_height_stairs * gravity), 0)
+				else:
+					print("upper")
+			else:
+				jump_vel = calc_jump_vel_nojump(delta)
 		
 		if raycast_up.is_colliding():
 			jump_vel = Vector3.ZERO
