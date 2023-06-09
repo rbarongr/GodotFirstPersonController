@@ -24,7 +24,7 @@ shape = SubResource("CapsuleShape3D_3rsb5")
 transform = Transform3D(1, 0, 0, 0, -3.0598e-08, -1, 0, 0.7, -4.37114e-08, 0, -0.396206, 0)
 
 [node name="RayForwardStairsLower" type="RayCast3D" parent="CShapeBody"]
-transform = Transform3D(1, 0, 0, 0, 0.0239821, -0.99765, 0, 0.349177, 0.0685202, 0, -0.875752, 0)
+transform = Transform3D(1, 0, 0, 0, -1.5299e-08, -1, 0, 0.35, -4.37114e-08, 0, -0.759152, 0)
 
 [node name="CShapeHead" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49999, 0)
@@ -69,6 +69,7 @@ stretch_mode = 5
 target_position = Vector3(0, 0, -100)
 
 [node name="RayTop" type="RayCast3D" parent="CShapeHead"]
+transform = Transform3D(1, 0, 0, 0, 0.605, 0, 0, 0, 1, 0, 0, 0)
 target_position = Vector3(0, 0.6, 0)
 collide_with_areas = true
 

@@ -22,7 +22,7 @@ class_name Player extends CharacterBody3D
 
 @export_range(0.1, 3.0, 0.1) var jump_height_default: float = 2 # m
 @export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
-@export_range(0.1, 2.0, 0.8) var jump_height_stairs: float = 1
+@export_range(0.1, 2.0, 0.8) var jump_height_stairs: float = .5
 @export var jump_hold_allowed: bool = true
 
 @export_range(1, 50, 1) var swim_vertical_default = 5
@@ -151,6 +151,7 @@ func _input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if mouse_captured: _rotate_camera(delta)
 	velocity = _walk(delta) + _gravity(delta) + _jump(delta)
+	print(velocity.abs())
 	move_and_slide()
 
 func capture_mouse() -> void:
@@ -265,6 +266,7 @@ func _jump(delta: float) -> Vector3:
 			if raycast_stairs_lower.is_colliding():
 				print("lower")
 				if not raycast_stairs_upper.is_colliding():
+					
 					jump_vel = Vector3(0, sqrt(4 * jump_height_stairs * gravity), 0)
 				else:
 					print("upper")
