@@ -314,15 +314,6 @@ func _jump(delta: float) -> Vector3:
 			var walk_dir: Vector3 = Vector3(0, 1, 0).normalized()
 			jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_fast, acceleration_water * delta)
 		
-		"""
-		if state_speed_current != SpeedStates.CROUCH and state_jump_current != JumpStates.DEFAULT:
-			#jump_vel = Vector3.ZERO
-			jump_vel = calc_jump_vel_nojump(delta)
-		elif state_speed_current == SpeedStates.CROUCH:
-			var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
-			jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
-		"""
-		
 	elif state_movement_current == MovementStates.FLY:
 		pass
 	
@@ -338,7 +329,7 @@ func calc_jump_vel_high() -> Vector3:
 func _process(delta: float):
 	# check for consistency (in case we ran into a bug before)
 	if raycast_down_swim.get_collision_point().y < water_depth_separator:
-		if state_movement_current != MovementStates.SWIM:
+		if state_movement_current != MovementStates.SWIM and state_movement_current != MovementStates.LADDER_WATER and state_movement_current != MovementStates.LADDER_WATER_ATTACHED:
 			state_movement_current = MovementStates.SWIM
 			print("BUG: We are under Water but not marked as 'SWIM'!")
 	
@@ -358,11 +349,13 @@ func _process(delta: float):
 			camera_fp.current = true
 			player_body.visible = false
 	
+	"""
 	if Input.is_action_just_pressed("swim_fly_toggle"):
 		if state_movement_current == MovementStates.LAND:
 			state_movement_current = MovementStates.SWIM
 		else:
 			state_movement_current = MovementStates.LAND
+	"""
 	
 	# adjust player height (crouch or not)
 	if state_movement_current == MovementStates.LAND or state_movement_current == MovementStates.LADDER_LAND or state_movement_current == MovementStates.LADDER_WATER:
