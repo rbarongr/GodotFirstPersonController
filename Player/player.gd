@@ -22,6 +22,7 @@ class_name Player extends CharacterBody3D
 
 @export_range(0.1, 3.0, 0.1) var jump_height_default: float = 2 # m
 @export_range(0.1, 3.0, 0.1) var jump_height_high: float = 3
+@export_range(0.1, 3.0, 1) var jump_height_crouched: float = 1
 @export_range(0.1, 2.0, 0.8) var jump_height_stairs: float = .5
 @export var jump_hold_allowed: bool = true
 
@@ -57,7 +58,7 @@ var state_movement_current = MovementStates.LAND
 
 enum JumpStates {
 	NO,      # not jumping
-	UP, # slow upjump
+	UP,      # slow upjump
 	DOWN,    # slow downjump (swimming only)
 	HIGH,    # fast upjump
 	HOLD     # stopping your falling, holding you in the air at current height
@@ -256,7 +257,10 @@ func _jump(delta: float) -> Vector3:
 		if state_jump_current == JumpStates.UP:
 			state_jump_current = JumpStates.NO
 			
-			jump_vel = calc_jump_vel_default()
+			if state_speed_current == SpeedStates.CROUCH:
+				jump_vel = Vector3(0, sqrt(4 * jump_height_crouched * gravity), 0)
+			else:
+				jump_vel = calc_jump_vel_default()
 			
 		elif state_jump_current == JumpStates.HIGH:
 			state_jump_current = JumpStates.NO
@@ -268,6 +272,8 @@ func _jump(delta: float) -> Vector3:
 				if not raycast_stairs_upper.is_colliding():
 					
 					jump_vel = Vector3(0, sqrt(4 * jump_height_stairs * gravity), 0)
+					# to avoid autojump-loop if standing too close to stairs, move the player additionally a bit forward to make the jump (hopefully) succeed
+					#jump_vel = Vector3(0, sqrt(4 * jump_height_stairs * gravity), 0)
 				else:
 					print("upper")
 			else:
