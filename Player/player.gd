@@ -12,6 +12,8 @@ class_name Player extends CharacterBody3D
 # how fast the player goes into crouch position
 @export_range(1, 35, 1) var speed_crouching: float = 10
 
+@export var allow_movement_in_air: bool = true
+
 @export_range(0, 10, 1) var height_default: float = 1.5
 @export_range(0, 10, 1) var height_crouched: float = 0.5
 
@@ -181,9 +183,10 @@ func _walk(delta: float) -> Vector3:
 	move_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	
 	if state_movement_current == MovementStates.LAND:
-		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
-		var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
-		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
+		if is_on_floor() or allow_movement_in_air:
+			var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
+			var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
+			walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
 	
 	elif state_movement_current == MovementStates.LADDER_LAND_ATTACHED:
 		state_movement_current = MovementStates.LADDER_LAND
