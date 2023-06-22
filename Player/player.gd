@@ -156,39 +156,40 @@ func _walk(delta: float) -> Vector3:
 	
 	move_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	
-	if state_movement_current == MovementStates.LAND:
-		if is_on_floor() or allow_movement_while_jump:
+	match state_movement_current:
+		MovementStates.LAND:
+			if is_on_floor() or allow_movement_while_jump:
+				var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
+				var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
+				walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
+		
+		MovementStates.LADDER_LAND_ATTACHED:
+			state_movement_current = MovementStates.LADDER_LAND
+			walk_vel = player_walk_ladder(delta)
+		MovementStates.LADDER_WATER_ATTACHED:
+			state_movement_current = MovementStates.LADDER_WATER
+			walk_vel = player_walk_ladder(delta)
+		
+		MovementStates.LADDER_LAND, MovementStates.LADDER_WATER:
+			walk_vel = player_walk_ladder(delta)
+			
+			if is_on_floor():
+				if state_movement_current == MovementStates.LADDER_LAND:
+					state_movement_current = MovementStates.LAND
+				elif state_movement_current == MovementStates.LADDER_WATER:
+					state_movement_current = MovementStates.SWIM
+				ladder_array.clear()
+		
+		MovementStates.SWIM:
+			#if raycast_down_swim.is_colliding():
+			#	pass
+			
 			var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
-			var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
-			walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
-	
-	elif state_movement_current == MovementStates.LADDER_LAND_ATTACHED:
-		state_movement_current = MovementStates.LADDER_LAND
-		walk_vel = player_walk_ladder(delta)
-	elif state_movement_current == MovementStates.LADDER_WATER_ATTACHED:
-		state_movement_current = MovementStates.LADDER_WATER
-		walk_vel = player_walk_ladder(delta)
-	
-	elif state_movement_current == MovementStates.LADDER_LAND or state_movement_current == MovementStates.LADDER_WATER:
-		walk_vel = player_walk_ladder(delta)
+			var walk_dir: Vector3 = Vector3(_forward.x, _forward.y, _forward.z).normalized()
+			walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_water * delta)
 		
-		if is_on_floor():
-			if state_movement_current == MovementStates.LADDER_LAND:
-				state_movement_current = MovementStates.LAND
-			elif state_movement_current == MovementStates.LADDER_WATER:
-				state_movement_current = MovementStates.SWIM
-			ladder_array.clear()
-	
-	elif state_movement_current == MovementStates.SWIM:
-		#if raycast_down_swim.is_colliding():
-		#	pass
-		
-		var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
-		var walk_dir: Vector3 = Vector3(_forward.x, _forward.y, _forward.z).normalized()
-		walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_water * delta)
-	
-	elif state_movement_current == MovementStates.FLY:
-		pass
+		MovementStates.FLY:
+			pass
 	
 	return walk_vel
 
