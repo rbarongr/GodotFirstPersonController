@@ -1,8 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://cdk6hwb4hi2wc"]
+[gd_scene load_steps=10 format=3 uid="uid://cdk6hwb4hi2wc"]
 
 [ext_resource type="Script" path="res://Player/player.gd" id="1_uak8h"]
 [ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="2_1s7lu"]
+[ext_resource type="Script" path="res://Player/PlayerFlashlight.gd" id="2_cxcug"]
+[ext_resource type="Script" path="res://Player/CameraFPC.gd" id="2_jsan7"]
 [ext_resource type="Script" path="res://Player/FPSCounter.gd" id="3_ngb8k"]
+[ext_resource type="Script" path="res://Player/CameraMap.gd" id="3_peg4c"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.357319
@@ -30,12 +33,13 @@ transform = Transform3D(1, 0, 0, 0, -1.5299e-08, -1, 0, 0.35, -4.37114e-08, 0, -
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49999, 0)
 shape = SubResource("SphereShape3D_0jyoh")
 
-[node name="CameraFirstPerson" type="Camera3D" parent="CShapeHead"]
+[node name="CameraFPC" type="Camera3D" parent="CShapeHead"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00145996, 0)
 current = true
 fov = 80.0
+script = ExtResource("2_jsan7")
 
-[node name="PlayerFlashlight" type="SpotLight3D" parent="CShapeHead/CameraFirstPerson"]
+[node name="PlayerFlashlight" type="SpotLight3D" parent="CShapeHead/CameraFPC"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.197474, 0)
 light_energy = 100.0
 light_size = 0.5
@@ -44,8 +48,9 @@ distance_fade_enabled = true
 spot_range = 50.0
 spot_angle = 25.0
 spot_angle_attenuation = 4.0
+script = ExtResource("2_cxcug")
 
-[node name="CenterContainer" type="CenterContainer" parent="CShapeHead/CameraFirstPerson"]
+[node name="CenterContainer" type="CenterContainer" parent="CShapeHead/CameraFPC"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -60,12 +65,12 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="TextureRect" type="TextureRect" parent="CShapeHead/CameraFirstPerson/CenterContainer"]
+[node name="TextureRect" type="TextureRect" parent="CShapeHead/CameraFPC/CenterContainer"]
 layout_mode = 2
 texture = ExtResource("2_1s7lu")
 stretch_mode = 5
 
-[node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFirstPerson"]
+[node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFPC"]
 target_position = Vector3(0, 0, -100)
 
 [node name="RayTop" type="RayCast3D" parent="CShapeHead"]
@@ -80,6 +85,7 @@ collide_with_areas = true
 [node name="CameraMap" type="Camera3D" parent="CShapeHead"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 40, 0)
 size = 20.0
+script = ExtResource("3_peg4c")
 
 [node name="VisibleBody" type="CSGSphere3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.827538, 0)
