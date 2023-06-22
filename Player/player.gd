@@ -31,8 +31,6 @@ class_name Player extends CharacterBody3D
 @export_range(1, 50, 1) var swim_vertical_default = 5
 @export_range(1, 50, 1) var swim_vertical_fast = 10
 
-@export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 4
-
 var speed: float = speed_run
 
 # if we use a ladder, this ladder will be stored in here.
@@ -72,7 +70,6 @@ var mouse_captured: bool = false
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 var move_dir: Vector2 # Input direction for movement
-var look_dir: Vector2 # Input direction for look/aim
 
 var walk_vel: Vector3 # Walking velocity 
 var grav_vel: Vector3 # Gravity velocity 
@@ -80,7 +77,7 @@ var jump_vel: Vector3 # Jumping velocity
 
 @onready var player: Player = $Player
 @onready var player_capsule: CollisionShape3D = $CShapeBody
-@onready var camera_fp: Camera3D = $CShapeHead/CameraFirstPerson
+@onready var camera_fp: Camera3D = $CShapeHead/CameraFPC
 @onready var camera_map: Camera3D = $CShapeHead/CameraMap
 @onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
 @onready var raycast_up: RayCast3D = $CShapeHead/RayTop
@@ -93,10 +90,9 @@ var jump_vel: Vector3 # Jumping velocity
 
 func _ready() -> void:
 	capture_mouse()
-	flashlight.hide()
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
+func _input(_event: InputEvent) -> void:
+	#if event is InputEventMouseMotion: look_dir = event.relative * 0.01
 	
 	if Input.is_action_just_pressed("move_walk"):
 		state_speed_current = SpeedStates.WALK
@@ -143,18 +139,14 @@ func _input(event: InputEvent) -> void:
 	if Input.is_action_just_released("jump_high"):
 		state_jump_current = JumpStates.NO
 	
-	if camera_map.current:
-		if Input.is_action_just_pressed("mouse_wheel_up"):
-			camera_map.fov += 3
-		if Input.is_action_just_pressed("mouse_wheel_down"):
-			camera_map.fov -= 3
-	
 	if Input.is_action_just_pressed("exit"): get_tree().quit()
 
 func _physics_process(delta: float) -> void:
-	if mouse_captured: _rotate_camera(delta)
+	if mouse_captured:
+		camera_fp._rotate_camera(delta)
+		camera_map._rotate_camera(delta)
+	
 	velocity = _walk(delta) + _gravity(delta) + _jump(delta)
-	print(velocity.abs())
 	move_and_slide()
 
 func capture_mouse() -> void:
@@ -164,18 +156,6 @@ func capture_mouse() -> void:
 func release_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	mouse_captured = false
-
-func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
-	look_dir += Input.get_vector("look_left","look_right","look_up","look_down")
-	
-	camera_fp.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
-	camera_fp.rotation.x = clamp(camera_fp.rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
-	
-	camera_map.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
-	#camera_map.rotation.x = clamp(camera_map.rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
-	player_body.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
-	
-	look_dir = Vector2.ZERO
 
 func _walk(delta: float) -> Vector3:
 	player_adjust_speed()
