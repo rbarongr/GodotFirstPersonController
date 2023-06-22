@@ -79,7 +79,6 @@ var jump_vel: Vector3 # Jumping velocity
 @onready var player_capsule: CollisionShape3D = $CShapeBody
 @onready var camera_fp: Camera3D = $CShapeHead/CameraFPC
 @onready var camera_map: Camera3D = $CShapeHead/CameraMap
-@onready var flashlight: SpotLight3D = $CShapeHead/CameraFirstPerson/PlayerFlashlight
 @onready var raycast_up: RayCast3D = $CShapeHead/RayTop
 @onready var raycast_down_swim: RayCast3D = $CShapeHead/RayDownSwim
 @onready var raycast_stairs_upper: RayCast3D = $CShapeBody/RayForwardStairsUpper
@@ -92,8 +91,6 @@ func _ready() -> void:
 	capture_mouse()
 
 func _input(_event: InputEvent) -> void:
-	#if event is InputEventMouseMotion: look_dir = event.relative * 0.01
-	
 	if Input.is_action_just_pressed("move_walk"):
 		state_speed_current = SpeedStates.WALK
 	if Input.is_action_just_released("move_walk"):
@@ -142,20 +139,17 @@ func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("exit"): get_tree().quit()
 
 func _physics_process(delta: float) -> void:
-	if mouse_captured:
-		camera_fp._rotate_camera(delta)
-		camera_map._rotate_camera(delta)
-	
 	velocity = _walk(delta) + _gravity(delta) + _jump(delta)
 	move_and_slide()
 
 func capture_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	mouse_captured = true
-
 func release_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	mouse_captured = false
+func is_mouse_captured() -> bool:
+	return mouse_captured
 
 func _walk(delta: float) -> Vector3:
 	player_adjust_speed()
@@ -343,14 +337,6 @@ func _process(delta: float):
 		if state_movement_current != MovementStates.SWIM and state_movement_current != MovementStates.LADDER_WATER and state_movement_current != MovementStates.LADDER_WATER_ATTACHED:
 			state_movement_current = MovementStates.SWIM
 			print("BUG: We are under Water but not marked as 'SWIM'!")
-	
-	# this runs a lot better here in _process than in _input
-	# https://stackoverflow.com/questions/69981662/godot-input-is-action-just-pressed-runs-twice
-	if Input.is_action_just_pressed("flashlight_toggle"):
-		if flashlight.visible:
-			flashlight.hide()
-		else:
-			flashlight.show()
 	
 	if Input.is_action_just_pressed("map_toggle"):
 		if camera_fp.current:
