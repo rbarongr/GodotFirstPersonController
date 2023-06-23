@@ -53,7 +53,6 @@ enum MovementStates {
 }
 var state_movement_current = MovementStates.LAND
 var state_movement_previous = MovementStates.LAND
-var ladder_attached_timestamp: float = Time.get_unix_time_from_system()
 
 enum JumpStates {
 	NO,      # not jumping
@@ -165,12 +164,9 @@ func _walk(delta: float) -> Vector3:
 		MovementStates.LADDER_LAND, MovementStates.LADDER_WATER:
 			walk_vel = player_walk_ladder(delta)
 			
-			# if we walk down a ladder and reach the floor, we want to detach automatically and just walk away backwards
-			# however if we start to walk to a ladder, we want also to be able to just walk up the ladder
-			# we need this little timedelta so if we walk into the ladder with the goal of walking it up, we do not get
-			# detached from the ladder immediately making it effectively impossible to start to climb the ladder
-			# unless you jump on it
-			if is_on_floor() and ladder_attached_timestamp < Time.get_unix_time_from_system() - 0.01:
+			# only detach from ladder on floor when walking downwards, otherwise we would not be able to walk up
+			# because we would just immediately detach again
+			if is_on_floor() and walk_vel.y < 0:
 				if state_movement_current == MovementStates.LADDER_LAND:
 					movement_state_change(MovementStates.LAND)
 				elif state_movement_current == MovementStates.LADDER_WATER:
@@ -202,6 +198,7 @@ func player_adjust_speed() -> void:
 func player_walk_ladder(delta: float) -> Vector3:
 	var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, 0)
 	var walk_dir: Vector3 = Vector3(_forward.x, -1 * move_dir.y, _forward.z).normalized()
+	
 	return walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
 
 func _gravity(delta: float) -> Vector3:
@@ -365,7 +362,6 @@ func _process(delta: float):
 		
 
 func on_ladder_entered(ladder: Ladder):
-	ladder_attached_timestamp = Time.get_unix_time_from_system()
 	ladder_array.append(ladder)
 	match state_movement_current:
 		MovementStates.LAND:
