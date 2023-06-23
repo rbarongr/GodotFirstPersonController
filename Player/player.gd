@@ -375,29 +375,33 @@ func _process(delta: float):
 
 func on_ladder_entered(ladder: Ladder):
 	ladder_array.append(ladder)
-	if state_movement_current == MovementStates.LAND:
-		state_movement_current = MovementStates.LADDER_LAND_ATTACHED
-	elif state_movement_current == MovementStates.SWIM:
-		state_movement_current = MovementStates.LADDER_WATER_ATTACHED
+	match state_movement_current:
+		MovementStates.LAND:
+			state_movement_current = MovementStates.LADDER_LAND_ATTACHED
+		MovementStates.SWIM:
+			state_movement_current = MovementStates.LADDER_WATER_ATTACHED
 
 func on_ladder_exited(ladder: Ladder):
 	ladder_array.erase(ladder)
 	if ladder_array.size() == 0:
-		if state_movement_current == MovementStates.LADDER_LAND:
-			state_movement_current = MovementStates.LAND
-		elif state_movement_current == MovementStates.LADDER_WATER:
-			state_movement_current = MovementStates.SWIM
+		match state_movement_current:
+			MovementStates.LADDER_LAND:
+				state_movement_current = MovementStates.LAND
+			MovementStates.LADDER_WATER:
+				state_movement_current = MovementStates.SWIM
 
 func on_water_entered(water: Water):
 	#body.ladder_array.append(self)
-	if state_movement_current == MovementStates.LAND:
-		state_movement_current = MovementStates.SWIM
-	elif state_movement_current == MovementStates.LADDER_LAND:
-		state_movement_current = MovementStates.LADDER_WATER
+	match state_movement_current:
+		MovementStates.LAND:
+			state_movement_current = MovementStates.SWIM
+		MovementStates.LADDER_LAND:
+			state_movement_current = MovementStates.LADDER_WATER
 
 func on_water_exited(water: Water):
 	#body.ladder_array.append(self)
-	if state_movement_current == MovementStates.SWIM:
-		state_movement_current = MovementStates.LAND
-	elif state_movement_current == MovementStates.LADDER_WATER:
-		state_movement_current = MovementStates.LADDER_LAND
+	match state_movement_current:
+		MovementStates.SWIM:
+			state_movement_current = MovementStates.LAND
+		MovementStates.LADDER_WATER:
+			state_movement_current = MovementStates.LADDER_LAND
