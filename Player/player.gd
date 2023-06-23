@@ -51,8 +51,7 @@ enum MovementStates {
 	LADDER_WATER_ATTACHED, # we need to know where we were before attaching to the ladder in order to know where we have to go back on detach
 	LADDER_LAND,    # the player is already on the ladder, coming from land
 	LADDER_WATER,   # the player is already on the ladder, coming from water
-	SWIM,           # movement under water (or basic flying)
-	FLY
+	SWIM            # movement under water (or basic flying)
 }
 var state_movement_current = MovementStates.LAND
 
@@ -187,9 +186,6 @@ func _walk(delta: float) -> Vector3:
 			var _forward: Vector3 = camera_fp.transform.basis * Vector3(move_dir.x, 0, move_dir.y)
 			var walk_dir: Vector3 = Vector3(_forward.x, _forward.y, _forward.z).normalized()
 			walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_water * delta)
-		
-		MovementStates.FLY:
-			pass
 	
 	return walk_vel
 
@@ -226,8 +222,6 @@ func _gravity(delta: float) -> Vector3:
 		
 		MovementStates.SWIM:
 			grav_vel = grav_vel.move_toward(Vector3.ZERO, water_drag)
-		MovementStates.FLY:
-			pass
 	
 	return grav_vel
 
@@ -324,9 +318,6 @@ func _jump(delta: float) -> Vector3:
 				var walk_dir: Vector3 = Vector3(0, -1, 0).normalized()
 				jump_vel = jump_vel.move_toward(walk_dir * swim_vertical_default, acceleration_water * delta)
 			"""
-			
-		MovementStates.FLY:
-			pass
 	
 	return jump_vel
 
