@@ -22,8 +22,6 @@ func _physics_process(delta: float) -> void:
 func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
 	look_dir += Input.get_vector("look_left","look_right","look_up","look_down")
 	
-	#rotation.y -= look_dir.x * camera_sens * sens_mod * delta
-	#rotation.x = clamp(rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
 	rotation.y -= look_dir.x * camera_sens * sens_mod * delta
 	
 	look_dir = Vector2.ZERO
