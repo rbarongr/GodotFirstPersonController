@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cdk6hwb4hi2wc"]
+[gd_scene load_steps=15 format=3 uid="uid://cdk6hwb4hi2wc"]
 
 [ext_resource type="Script" path="res://Player/player.gd" id="1_hjr8w"]
 [ext_resource type="Script" path="res://Player/CameraFPC.gd" id="2_67rdu"]
@@ -7,6 +7,10 @@
 [ext_resource type="Script" path="res://Player/CameraMap.gd" id="5_5mtxs"]
 [ext_resource type="Script" path="res://Player/VisibleBody.gd" id="6_gqe4h"]
 [ext_resource type="Script" path="res://Player/FPSCounter.gd" id="7_dve6g"]
+[ext_resource type="Script" path="res://Player/StateMachine.gd" id="8_f2kqx"]
+[ext_resource type="Script" path="res://Player/MovementLand.gd" id="9_jay31"]
+[ext_resource type="Script" path="res://Player/MovementWater.gd" id="10_2ar0w"]
+[ext_resource type="Script" path="res://Player/MovementLadder.gd" id="11_l7bjq"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.357319
@@ -118,3 +122,15 @@ height = 0.627514
 offset_right = 40.0
 offset_bottom = 23.0
 script = ExtResource("7_dve6g")
+
+[node name="StateMachine" type="Node3D" parent="."]
+script = ExtResource("8_f2kqx")
+
+[node name="MovementLand" type="Node3D" parent="StateMachine"]
+script = ExtResource("9_jay31")
+
+[node name="MovementWater" type="Node3D" parent="StateMachine"]
+script = ExtResource("10_2ar0w")
+
+[node name="MovementLadder" type="Node3D" parent="StateMachine"]
+script = ExtResource("11_l7bjq")
