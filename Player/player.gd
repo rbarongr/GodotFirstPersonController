@@ -57,7 +57,7 @@ var state_movement_previous = MovementStates.LAND
 enum JumpStates {
 	NO,      # not jumping
 	UP,      # slow upjump
-	DOWN,    # slow downjump (swimming only)
+	DOWN,    # slow downmovement (swimming only)
 	HIGH,    # fast upjump
 	HOLD     # stopping your falling, holding you in the air at current height
 }
