@@ -1,9 +1,9 @@
 [gd_scene load_steps=9 format=3 uid="uid://2r2xorepwlip"]
 
-[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_6vau8"]
-[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_jpbxd"]
-[ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_chq1u"]
-[ext_resource type="PackedScene" uid="uid://chascookfeke3" path="res://Scenes/water_surface.tscn" id="4_cu8f0"]
+[ext_resource type="PackedScene" uid="uid://cdk6hwb4hi2wc" path="res://Player/player.tscn" id="1_3rww2"]
+[ext_resource type="Texture2D" uid="uid://b01vv6qc3japu" path="res://Assets/DarkPrototypeTexture.png" id="2_iphlp"]
+[ext_resource type="PackedScene" uid="uid://d04r1xotjp8s" path="res://Scenes/ladder.tscn" id="3_abpk4"]
+[ext_resource type="PackedScene" uid="uid://chascookfeke3" path="res://Scenes/water_surface.tscn" id="4_3q5t7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_yxtyg"]
 
@@ -15,10 +15,10 @@ background_mode = 2
 sky = SubResource("Sky_edr0k")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p85vg"]
-albedo_texture = ExtResource("2_jpbxd")
+albedo_texture = ExtResource("2_iphlp")
 metallic_specular = 0.0
 roughness = 0.1
-roughness_texture = ExtResource("2_jpbxd")
+roughness_texture = ExtResource("2_iphlp")
 uv1_triplanar = true
 
 [node name="World" type="Node3D"]
@@ -30,7 +30,28 @@ environment = SubResource("Environment_k5onh")
 transform = Transform3D(-0.678961, 0.262875, -0.685499, -0.027831, 0.923814, 0.38183, 0.733646, 0.278326, -0.619918, 0, 6.83834, 0)
 shadow_enabled = true
 
-[node name="Player" parent="." instance=ExtResource("1_6vau8")]
+[node name="Player" parent="." instance=ExtResource("1_3rww2")]
+player_height_default = 2.0
+player_height_crouching = 0.5
+player_height_swimming = 0.2
+speed_run = 10.0
+speed_walk = 5.0
+speed_crouched = 2.0
+speed_crouching = 10.0
+allow_movement_while_jump = true
+height_default = 1.5
+height_crouched = 0.5
+acceleration_land = 400.0
+acceleration_water = 200.0
+water_drag = 1.0
+water_depth_separator = -2.0
+jump_height_default = 2.0
+jump_height_high = 3.0
+jump_height_crouched = 1.0
+jump_height_stairs = 0.5
+jump_hold_allowed = true
+swim_vertical_default = 5
+swim_vertical_fast = 10
 
 [node name="Platform" type="Node3D" parent="."]
 
@@ -310,14 +331,14 @@ use_collision = true
 size = Vector3(60.1655, 22.1391, 0.5)
 material = SubResource("StandardMaterial3D_p85vg")
 
-[node name="Ladder" parent="Platform" instance=ExtResource("3_chq1u")]
+[node name="Ladder" parent="Platform" instance=ExtResource("3_abpk4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.7232, 0, 18)
 
-[node name="WaterSurface" parent="Platform" instance=ExtResource("4_cu8f0")]
+[node name="WaterSurface" parent="Platform" instance=ExtResource("4_3q5t7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, -1.00242, 0)
 
-[node name="Ladder2" parent="Platform" instance=ExtResource("3_chq1u")]
+[node name="Ladder2" parent="Platform" instance=ExtResource("3_abpk4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40.8586, -21.3388, -10.984)
 
-[node name="Ladder3" parent="Platform" instance=ExtResource("3_chq1u")]
+[node name="Ladder3" parent="Platform" instance=ExtResource("3_abpk4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.4787, -25.9497, -0.451653)

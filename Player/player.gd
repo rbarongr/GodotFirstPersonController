@@ -47,14 +47,13 @@ var state_speed_current = SpeedStates.RUN
 
 enum MovementStates {
 	LAND,           # movement on dry land
-	LADDER_LAND_ATTACHED, # the player has attached to the ladder right now
-	LADDER_WATER_ATTACHED, # we need to know where we were before attaching to the ladder in order to know where we have to go back on detach
 	LADDER_LAND,    # the player is already on the ladder, coming from land
 	LADDER_WATER,   # the player is already on the ladder, coming from water
 	SWIM            # movement under water (or basic flying)
 }
 var state_movement_current = MovementStates.LAND
 var state_movement_previous = MovementStates.LAND
+var ladder_attached_timestamp: float = Time.get_unix_time_from_system()
 
 enum JumpStates {
 	NO,      # not jumping
@@ -163,17 +162,15 @@ func _walk(delta: float) -> Vector3:
 				var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
 				walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
 		
-		MovementStates.LADDER_LAND_ATTACHED:
-			movement_state_change(MovementStates.LADDER_LAND)
-			walk_vel = player_walk_ladder(delta)
-		MovementStates.LADDER_WATER_ATTACHED:
-			movement_state_change(MovementStates.LADDER_WATER)
-			walk_vel = player_walk_ladder(delta)
-		
 		MovementStates.LADDER_LAND, MovementStates.LADDER_WATER:
 			walk_vel = player_walk_ladder(delta)
 			
-			if is_on_floor():
+			# if we walk down a ladder and reach the floor, we want to detach automatically and just walk away backwards
+			# however if we start to walk to a ladder, we want also to be able to just walk up the ladder
+			# we need this little timedelta so if we walk into the ladder with the goal of walking it up, we do not get
+			# detached from the ladder immediately making it effectively impossible to start to climb the ladder
+			# unless you jump on it
+			if is_on_floor() and ladder_attached_timestamp < Time.get_unix_time_from_system() - 0.01:
 				if state_movement_current == MovementStates.LADDER_LAND:
 					movement_state_change(MovementStates.LAND)
 				elif state_movement_current == MovementStates.LADDER_WATER:
@@ -331,10 +328,12 @@ func calc_jump_vel_high() -> Vector3:
 
 func _process(delta: float):
 	# check for consistency (in case we ran into a bug before)
+	"""
 	if raycast_down_swim.get_collision_point().y < water_depth_separator:
 		if state_movement_current != MovementStates.SWIM and state_movement_current != MovementStates.LADDER_WATER and state_movement_current != MovementStates.LADDER_WATER_ATTACHED:
 			movement_state_change(MovementStates.SWIM)
 			print("BUG: We are under Water but not marked as 'SWIM'!")
+	"""
 	
 	if Input.is_action_just_pressed("map_toggle"):
 		if camera_fp.current:
@@ -366,12 +365,13 @@ func _process(delta: float):
 		
 
 func on_ladder_entered(ladder: Ladder):
+	ladder_attached_timestamp = Time.get_unix_time_from_system()
 	ladder_array.append(ladder)
 	match state_movement_current:
 		MovementStates.LAND:
-			movement_state_change(MovementStates.LADDER_LAND_ATTACHED)
+			movement_state_change(MovementStates.LADDER_LAND)
 		MovementStates.SWIM:
-			movement_state_change(MovementStates.LADDER_WATER_ATTACHED)
+			movement_state_change(MovementStates.LADDER_WATER)
 
 func on_ladder_exited(ladder: Ladder):
 	ladder_array.erase(ladder)
