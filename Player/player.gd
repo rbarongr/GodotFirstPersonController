@@ -54,6 +54,7 @@ enum MovementStates {
 	SWIM            # movement under water (or basic flying)
 }
 var state_movement_current = MovementStates.LAND
+var state_movement_previous = MovementStates.LAND
 
 enum JumpStates {
 	NO,      # not jumping
@@ -163,10 +164,10 @@ func _walk(delta: float) -> Vector3:
 				walk_vel = walk_vel.move_toward(walk_dir * speed * move_dir.length(), acceleration_land * delta)
 		
 		MovementStates.LADDER_LAND_ATTACHED:
-			state_movement_current = MovementStates.LADDER_LAND
+			movement_state_change(MovementStates.LADDER_LAND)
 			walk_vel = player_walk_ladder(delta)
 		MovementStates.LADDER_WATER_ATTACHED:
-			state_movement_current = MovementStates.LADDER_WATER
+			movement_state_change(MovementStates.LADDER_WATER)
 			walk_vel = player_walk_ladder(delta)
 		
 		MovementStates.LADDER_LAND, MovementStates.LADDER_WATER:
@@ -174,9 +175,9 @@ func _walk(delta: float) -> Vector3:
 			
 			if is_on_floor():
 				if state_movement_current == MovementStates.LADDER_LAND:
-					state_movement_current = MovementStates.LAND
+					movement_state_change(MovementStates.LAND)
 				elif state_movement_current == MovementStates.LADDER_WATER:
-					state_movement_current = MovementStates.SWIM
+					movement_state_change(MovementStates.SWIM)
 				ladder_array.clear()
 		
 		MovementStates.SWIM:
@@ -265,9 +266,9 @@ func _jump(delta: float) -> Vector3:
 				JumpStates.UP:
 					state_jump_current = JumpStates.NO
 					if state_movement_current == MovementStates.LADDER_LAND:
-						state_movement_current = MovementStates.LAND
+						movement_state_change(MovementStates.LAND)
 					elif state_movement_current == MovementStates.LADDER_WATER:
-						state_movement_current = MovementStates.SWIM
+						movement_state_change(MovementStates.SWIM)
 					ladder_array.clear()
 					
 					# just let go the ladder, otherwise do nothing
@@ -275,7 +276,7 @@ func _jump(delta: float) -> Vector3:
 				JumpStates.HIGH:
 					state_jump_current = JumpStates.NO
 					if state_movement_current == MovementStates.LADDER_LAND:
-						state_movement_current = MovementStates.LAND
+						movement_state_change(MovementStates.LAND)
 						
 						# launch the player backwards away from the ladder
 						var _forward: Vector3 = camera_fp.transform.basis * Vector3(0, 1, 0)
@@ -283,7 +284,7 @@ func _jump(delta: float) -> Vector3:
 						jump_vel = walk_vel.move_toward(walk_dir * speed, acceleration_land * delta)
 						
 					elif state_movement_current == MovementStates.LADDER_WATER:
-						state_movement_current = MovementStates.SWIM
+						movement_state_change(MovementStates.SWIM)
 					ladder_array.clear()
 		
 		MovementStates.SWIM:
@@ -332,7 +333,7 @@ func _process(delta: float):
 	# check for consistency (in case we ran into a bug before)
 	if raycast_down_swim.get_collision_point().y < water_depth_separator:
 		if state_movement_current != MovementStates.SWIM and state_movement_current != MovementStates.LADDER_WATER and state_movement_current != MovementStates.LADDER_WATER_ATTACHED:
-			state_movement_current = MovementStates.SWIM
+			movement_state_change(MovementStates.SWIM)
 			print("BUG: We are under Water but not marked as 'SWIM'!")
 	
 	if Input.is_action_just_pressed("map_toggle"):
@@ -346,9 +347,9 @@ func _process(delta: float):
 	"""
 	if Input.is_action_just_pressed("swim_fly_toggle"):
 		if state_movement_current == MovementStates.LAND:
-			state_movement_current = MovementStates.SWIM
+			movement_state_change(MovementStates.SWIM
 		else:
-			state_movement_current = MovementStates.LAND
+			movement_state_change(MovementStates.LAND
 	"""
 	
 	# adjust player height (crouch or not)
@@ -368,31 +369,35 @@ func on_ladder_entered(ladder: Ladder):
 	ladder_array.append(ladder)
 	match state_movement_current:
 		MovementStates.LAND:
-			state_movement_current = MovementStates.LADDER_LAND_ATTACHED
+			movement_state_change(MovementStates.LADDER_LAND_ATTACHED)
 		MovementStates.SWIM:
-			state_movement_current = MovementStates.LADDER_WATER_ATTACHED
+			movement_state_change(MovementStates.LADDER_WATER_ATTACHED)
 
 func on_ladder_exited(ladder: Ladder):
 	ladder_array.erase(ladder)
 	if ladder_array.size() == 0:
 		match state_movement_current:
 			MovementStates.LADDER_LAND:
-				state_movement_current = MovementStates.LAND
+				movement_state_change(MovementStates.LAND)
 			MovementStates.LADDER_WATER:
-				state_movement_current = MovementStates.SWIM
+				movement_state_change(MovementStates.SWIM)
 
 func on_water_entered(water: Water):
 	#body.ladder_array.append(self)
 	match state_movement_current:
 		MovementStates.LAND:
-			state_movement_current = MovementStates.SWIM
+			movement_state_change(MovementStates.SWIM)
 		MovementStates.LADDER_LAND:
-			state_movement_current = MovementStates.LADDER_WATER
+			movement_state_change(MovementStates.LADDER_WATER)
 
 func on_water_exited(water: Water):
 	#body.ladder_array.append(self)
 	match state_movement_current:
 		MovementStates.SWIM:
-			state_movement_current = MovementStates.LAND
+			movement_state_change(MovementStates.LAND)
 		MovementStates.LADDER_WATER:
-			state_movement_current = MovementStates.LADDER_LAND
+			movement_state_change(MovementStates.LADDER_LAND)
+
+func movement_state_change(state: MovementStates) -> void:
+	state_movement_previous = state_movement_current
+	state_movement_current = state
