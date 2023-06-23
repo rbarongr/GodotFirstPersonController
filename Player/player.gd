@@ -372,3 +372,32 @@ func _process(delta: float):
 		MovementStates.SWIM:
 			player_capsule.shape.height = player_height_swimming
 		
+
+func on_ladder_entered(ladder: Ladder):
+	ladder_array.append(ladder)
+	if state_movement_current == MovementStates.LAND:
+		state_movement_current = MovementStates.LADDER_LAND_ATTACHED
+	elif state_movement_current == MovementStates.SWIM:
+		state_movement_current = MovementStates.LADDER_WATER_ATTACHED
+
+func on_ladder_exited(ladder: Ladder):
+	ladder_array.erase(ladder)
+	if ladder_array.size() == 0:
+		if state_movement_current == MovementStates.LADDER_LAND:
+			state_movement_current = MovementStates.LAND
+		elif state_movement_current == MovementStates.LADDER_WATER:
+			state_movement_current = MovementStates.SWIM
+
+func on_water_entered(water: Water):
+	#body.ladder_array.append(self)
+	if state_movement_current == MovementStates.LAND:
+		state_movement_current = MovementStates.SWIM
+	elif state_movement_current == MovementStates.LADDER_LAND:
+		state_movement_current = MovementStates.LADDER_WATER
+
+func on_water_exited(water: Water):
+	#body.ladder_array.append(self)
+	if state_movement_current == MovementStates.SWIM:
+		state_movement_current = MovementStates.LAND
+	elif state_movement_current == MovementStates.LADDER_WATER:
+		state_movement_current = MovementStates.LADDER_LAND

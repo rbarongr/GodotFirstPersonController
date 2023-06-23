@@ -1,4 +1,4 @@
-extends Area3D
+class_name Water extends Area3D
 
 
 # Called when the node enters the scene tree for the first time.
@@ -13,16 +13,8 @@ func _process(delta):
 
 func _on_body_entered(body):
 	if body.name == "Player":
-		#body.ladder_array.append(self)
-		if body.state_movement_current == body.MovementStates.LAND:
-			body.state_movement_current = body.MovementStates.SWIM
-		elif body.state_movement_current == body.MovementStates.LADDER_LAND:
-			body.state_movement_current = body.MovementStates.LADDER_WATER
+		body.on_water_entered(self)
 
 func _on_body_exited(body):
 	if body.name == "Player":
-		#body.ladder_array.append(self)
-		if body.state_movement_current == body.MovementStates.SWIM:
-			body.state_movement_current = body.MovementStates.LAND
-		elif body.state_movement_current == body.MovementStates.LADDER_WATER:
-			body.state_movement_current = body.MovementStates.LADDER_LAND
+		body.on_water_exited(self)
