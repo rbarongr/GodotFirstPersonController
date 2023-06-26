@@ -1,11 +1,24 @@
-extends Node3D
-
+class_name MovementWater extends State
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+func ready():
+	pass
 
+func input(_event: InputEvent) -> void:
+	pass
+
+func physics_process(delta: float) -> void:
+	pass
+
+func walk(delta: float) -> Vector3:
+	return Vector3.ZERO
+
+func gravity(delta: float) -> Vector3:
+	return Vector3.ZERO
+
+func jump(delta: float) -> Vector3:
+	return Vector3.ZERO
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func process(delta):
 	pass

@@ -335,7 +335,7 @@ func _process(delta: float):
 	if Input.is_action_just_pressed("map_toggle"):
 		if camera_fp.current:
 			camera_map.current = true
-			player_body.visible = true
+			player_body.vi1sible = true
 		else:
 			camera_fp.current = true
 			player_body.visible = false

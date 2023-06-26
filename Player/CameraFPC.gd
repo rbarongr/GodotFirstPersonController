@@ -4,15 +4,13 @@ class_name CameraFPC extends Camera3D
 
 var look_dir: Vector2 # Input direction for look/aim
 
-@onready var player: Player = $Player
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	pass
 
 func _input(event: InputEvent) -> void:
