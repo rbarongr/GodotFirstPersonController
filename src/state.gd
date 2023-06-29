@@ -1,5 +1,6 @@
-class_name State extends Node
+class_name State extends Node3D
 
+var player: Player
 
 # Called when the node enters the scene tree for the first time.
 func ready():
@@ -23,3 +24,7 @@ func jump(delta: float) -> Vector3:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func process(delta):
 	pass
+
+func set_player(player: Player) -> void:
+	self.player = player
+

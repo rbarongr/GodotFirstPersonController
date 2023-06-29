@@ -2,15 +2,14 @@ class_name CameraMap extends Camera3D
 
 @export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 4
 
+@onready var camera_fp: Camera3D = get_node("%CameraFPC")
+@onready var player_body: CSGSphere3D = get_node("%VisibleBody")
+
 var look_dir: Vector2 # Input direction for look/aim
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
@@ -32,3 +31,13 @@ func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
 	
 	look_dir = Vector2.ZERO
 	
+
+func _process(delta: float):
+	if Input.is_action_just_pressed("map_toggle"):
+		print(current)
+		if current:
+			camera_fp.current = true
+			player_body.visible = false
+		else:
+			current = true
+			player_body.visible = true

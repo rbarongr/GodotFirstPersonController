@@ -6,12 +6,8 @@ var look_dir: Vector2 # Input direction for look/aim
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	print("ready")
 	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta):
-	pass
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
@@ -27,4 +23,7 @@ func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
 	rotation.x = clamp(rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
 	
 	look_dir = Vector2.ZERO
+
+func _process(delta: float):
+	pass
 	

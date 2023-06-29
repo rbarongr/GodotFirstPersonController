@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://d04r1xotjp8s"]
 
-[ext_resource type="Script" path="res://Scenes/ladder.gd" id="1_5a431"]
+[ext_resource type="Script" path="res://Scenes/ladder.gd" id="1_3b0ey"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_djpjd"]
 
 [node name="Ladder" type="Area3D"]
-script = ExtResource("1_5a431")
+script = ExtResource("1_3b0ey")
 
 [node name="VisibleModel" type="CSGCylinder3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0493946, 11.8602, -0.120449)
