@@ -47,6 +47,8 @@ func _process(delta):
 func set_state(value: State) -> void:
 	state = value
 
-func set_player(player: Player) -> void:
-	state.set_player(player)
+func get_velocities() -> Dictionary:
+	return state.get_velocities()
 
+func set_velocities(velocities: Dictionary):
+	state.set_velocities(velocities)

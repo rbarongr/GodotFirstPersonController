@@ -28,10 +28,6 @@ var speed: float = speed_fast
 
 var move_dir: Vector2 # Input direction for movement
 
-var walk_vel: Vector3 # Walking velocity
-var grav_vel: Vector3 # Gravity velocity 
-var jump_vel: Vector3 # Jumping velocity
-
 enum JumpStates {
 	NO,      # not moving upwards/downwards
 	UP,      # swim up / jump up from surface
@@ -98,7 +94,9 @@ func player_adjust_speed() -> void:
 		speed = speed_slow
 
 func gravity(delta: float) -> Vector3:
-	return Vector3.ZERO
+	grav_vel = grav_vel.move_toward(Vector3.ZERO, water_drag)
+	
+	return grav_vel
 
 func jump(delta: float) -> Vector3:
 	match state_jump_current:
@@ -133,6 +131,3 @@ func process(delta):
 	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching *10, player_height_default)
 	
 	# player_capsule.shape.height = player_height_swimming
-
-func set_player(player: Player) -> void:
-	self.player = player

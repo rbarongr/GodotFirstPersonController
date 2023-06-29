@@ -13,15 +13,17 @@ var grav_vel: Vector3 # Gravity velocity
 var jump_vel: Vector3 # Jumping velocity
 
 func _ready():
-	state_machine.set_player(self)
+	state_movement_land.set_player(self)
+	state_movement_water.set_player(self)
+	state_movement_ladder.set_player(self)
 
 func on_ladder_entered(ladder: Ladder):
 	print("ladder")
 	
-	#walk_vel, grav_vel, jump_vel = state_machine.get_velocities()
+	var velocities = state_machine.get_velocities()
 	
 	state_machine.set_state(state_movement_ladder)
-	state_machine.set_player(self)
+	state_machine.set_velocities(velocities)
 
 func on_ladder_exited(ladder: Ladder):
 	print("daller")
@@ -29,10 +31,16 @@ func on_ladder_exited(ladder: Ladder):
 
 func on_water_entered(water: Water):
 	print("inwater")
+	
+	var velocities = state_machine.get_velocities()
+	
 	state_machine.set_state(state_movement_water)
-	state_machine.set_player(self)
+	state_machine.set_velocities(velocities)
 
 func on_water_exited(water: Water):
 	print("offwater")
+	
+	var velocities = state_machine.get_velocities()
+	
 	state_machine.set_state(state_movement_land)
-	state_machine.set_player(self)
+	state_machine.set_velocities(velocities)

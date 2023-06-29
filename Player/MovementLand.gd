@@ -35,10 +35,6 @@ var speed: float = speed_run
 
 var move_dir: Vector2 # Input direction for movement
 
-var walk_vel: Vector3 # Walking velocity
-var grav_vel: Vector3 # Gravity velocity 
-var jump_vel: Vector3 # Jumping velocity
-
 enum JumpStates {
 	NO,      # not jumping
 	UP,      # slow upjump
@@ -174,7 +170,3 @@ func process(delta):
 	elif not raycast_up.is_colliding():
 		player_capsule.shape.height += speed_crouching * delta
 	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching, player_height_default)
-
-func set_player(player: Player) -> void:
-	self.player = player
-
