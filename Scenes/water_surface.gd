@@ -13,8 +13,10 @@ func _process(delta):
 
 func _on_body_entered(body):
 	if body.name == "Player":
-		body.on_water_entered(self)
+		#body.on_water_entered(self)
+		body.on_water_entered()
 
 func _on_body_exited(body):
 	if body.name == "Player":
-		body.on_water_exited(self)
+		#body.on_water_exited(self)
+		body.on_water_exited()

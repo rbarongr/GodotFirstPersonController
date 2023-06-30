@@ -2,6 +2,8 @@ class_name State extends Node3D
 
 var player: Player
 
+var move_dir: Vector2 # Input direction for movement
+
 var walk_vel: Vector3 # Walking velocity 
 var grav_vel: Vector3 # Gravity velocity 
 var jump_vel: Vector3 # Jumping velocity
@@ -17,13 +19,13 @@ func physics_process(delta: float) -> void:
 	pass
 
 func walk(delta: float) -> Vector3:
-	return Vector3.ZERO
+	return walk_vel
 
 func gravity(delta: float) -> Vector3:
-	return Vector3.ZERO
+	return grav_vel
 
 func jump(delta: float) -> Vector3:
-	return Vector3.ZERO
+	return jump_vel
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func process(delta):

@@ -1,17 +1,17 @@
 [gd_scene load_steps=16 format=3 uid="uid://cdk6hwb4hi2wc"]
 
-[ext_resource type="Script" path="res://Player/player.gd" id="1_fbfka"]
-[ext_resource type="Script" path="res://Player/CameraFPC.gd" id="2_5e6qp"]
-[ext_resource type="Script" path="res://Player/PlayerFlashlight.gd" id="3_8km2y"]
-[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="4_3ue38"]
-[ext_resource type="Texture2D" uid="uid://cjejtlsx67kht" path="res://Assets/reticle.png" id="5_luklw"]
-[ext_resource type="Script" path="res://Player/CameraMap.gd" id="6_6nkol"]
-[ext_resource type="Script" path="res://Player/VisibleBody.gd" id="7_bg5hb"]
-[ext_resource type="Script" path="res://Player/FPSCounter.gd" id="8_g7rwb"]
-[ext_resource type="Script" path="res://Player/StateMachine.gd" id="9_dh7pd"]
-[ext_resource type="Script" path="res://Player/MovementLand.gd" id="10_crvqn"]
-[ext_resource type="Script" path="res://Player/MovementWater.gd" id="11_3iv5u"]
-[ext_resource type="Script" path="res://Player/MovementLadder.gd" id="12_0v78s"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_kcjmu"]
+[ext_resource type="Script" path="res://Player/CameraFPC.gd" id="2_df1r6"]
+[ext_resource type="Script" path="res://Player/PlayerFlashlight.gd" id="3_mk5gb"]
+[ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="4_lpj2n"]
+[ext_resource type="Texture2D" uid="uid://cjejtlsx67kht" path="res://Assets/reticle.png" id="5_1585w"]
+[ext_resource type="Script" path="res://Player/CameraMap.gd" id="6_gd8ww"]
+[ext_resource type="Script" path="res://Player/VisibleBody.gd" id="7_u8oee"]
+[ext_resource type="Script" path="res://Player/FPSCounter.gd" id="8_c4ll4"]
+[ext_resource type="Script" path="res://Player/StateMachine.gd" id="9_87ucj"]
+[ext_resource type="Script" path="res://Player/MovementLand.gd" id="10_bwbap"]
+[ext_resource type="Script" path="res://Player/MovementWater.gd" id="11_di6cg"]
+[ext_resource type="Script" path="res://Player/MovementLadder.gd" id="12_0xkq2"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.357319
@@ -23,7 +23,7 @@ radius = 0.096856
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ru8h1"]
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_fbfka")
+script = ExtResource("1_kcjmu")
 
 [node name="CShapeBody" type="CollisionShape3D" parent="."]
 unique_name_in_owner = true
@@ -45,7 +45,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00145996, 0)
 current = true
 fov = 80.0
-script = ExtResource("2_5e6qp")
+script = ExtResource("2_df1r6")
 
 [node name="PlayerFlashlight" type="SpotLight3D" parent="CShapeHead/CameraFPC"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.197474, 0)
@@ -56,7 +56,7 @@ distance_fade_enabled = true
 spot_range = 50.0
 spot_angle = 25.0
 spot_angle_attenuation = 4.0
-script = ExtResource("3_8km2y")
+script = ExtResource("3_mk5gb")
 
 [node name="CenterContainer" type="CenterContainer" parent="CShapeHead/CameraFPC"]
 anchors_preset = 8
@@ -75,13 +75,13 @@ size_flags_vertical = 4
 
 [node name="CrosshairGreen" type="TextureRect" parent="CShapeHead/CameraFPC/CenterContainer"]
 layout_mode = 2
-texture = ExtResource("4_3ue38")
+texture = ExtResource("4_lpj2n")
 stretch_mode = 5
 
 [node name="CrosshairReticle" type="TextureRect" parent="CShapeHead/CameraFPC/CenterContainer"]
 visible = false
 layout_mode = 2
-texture = ExtResource("5_luklw")
+texture = ExtResource("5_1585w")
 stretch_mode = 3
 
 [node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFPC"]
@@ -102,14 +102,14 @@ collide_with_areas = true
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 40, 0)
 size = 20.0
-script = ExtResource("6_6nkol")
+script = ExtResource("6_gd8ww")
 
 [node name="VisibleBody" type="CSGSphere3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.827538, 0)
 visible = false
 radius = 0.300575
-script = ExtResource("7_bg5hb")
+script = ExtResource("7_u8oee")
 
 [node name="VisibleHead" type="CSGSphere3D" parent="VisibleBody"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.67727, 0)
@@ -134,20 +134,33 @@ height = 0.627514
 [node name="FPSCounter" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0
-script = ExtResource("8_g7rwb")
+script = ExtResource("8_c4ll4")
 
 [node name="StateMachine" type="Node3D" parent="."]
-script = ExtResource("9_dh7pd")
+script = ExtResource("9_87ucj")
 initial_state = NodePath("MovementLand")
 
 [node name="MovementLand" type="Node3D" parent="StateMachine"]
 unique_name_in_owner = true
-script = ExtResource("10_crvqn")
+script = ExtResource("10_bwbap")
+speed_run = null
+speed_walk = null
+speed_crouched = null
+speed_crouching = null
+player_height_default = null
+player_height_crouching = null
+acceleration = null
+allow_movement_while_jump = null
+jump_height_default = null
+jump_height_high = null
+jump_height_crouched = null
+jump_height_stairs = null
+jump_hold_allowed = null
 
 [node name="MovementWater" type="Node3D" parent="StateMachine"]
 unique_name_in_owner = true
-script = ExtResource("11_3iv5u")
+script = ExtResource("11_di6cg")
 
 [node name="MovementLadder" type="Node3D" parent="StateMachine"]
 unique_name_in_owner = true
-script = ExtResource("12_0v78s")
+script = ExtResource("12_0xkq2")

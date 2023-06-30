@@ -33,8 +33,6 @@ class_name MovementLand extends State
 var grav: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var speed: float = speed_run
 
-var move_dir: Vector2 # Input direction for movement
-
 enum JumpStates {
 	NO,      # not jumping
 	UP,      # slow upjump

@@ -26,8 +26,6 @@ class_name MovementWater extends State
 var grav: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 var speed: float = speed_fast
 
-var move_dir: Vector2 # Input direction for movement
-
 enum JumpStates {
 	NO,      # not moving upwards/downwards
 	UP,      # swim up / jump up from surface
@@ -88,10 +86,11 @@ func walk(delta: float) -> Vector3:
 	return walk_vel
 
 func player_adjust_speed() -> void:
-	if state_speed_current == SpeedStates.FAST:
-		speed = speed_fast
-	elif state_speed_current == SpeedStates.SLOW:
-		speed = speed_slow
+	match state_speed_current:
+		SpeedStates.FAST:
+			speed = speed_fast
+		SpeedStates.SLOW:
+			speed = speed_slow
 
 func gravity(delta: float) -> Vector3:
 	grav_vel = grav_vel.move_toward(Vector3.ZERO, water_drag)
@@ -127,7 +126,7 @@ func calc_jump_vel_default() -> Vector3:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func process(delta):
 	# if the player is around the surface and triggering state changes between water and land a lot, we want the height transition to be a bit more smooth ...
-	player_capsule.shape.height -= speed_crouching * delta
-	player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_crouching *10, player_height_default)
+	#player_capsule.shape.height -= speed_crouching * delta
+	#player_capsule.shape.height = clamp(player_capsule.shape.height, player_height_swimming *10, player_height_default)
 	
-	# player_capsule.shape.height = player_height_swimming
+	player_capsule.shape.height = player_height_swimming

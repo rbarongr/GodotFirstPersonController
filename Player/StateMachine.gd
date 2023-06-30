@@ -4,6 +4,7 @@ class_name StateMachine extends Node3D
 @export var initial_state := NodePath()
 
 @onready var state: State = get_node(initial_state)
+var state_previous: State
 
 var mouse_captured: bool = false
 
@@ -44,8 +45,15 @@ func _process(delta):
 	state.process(delta)
 
 
-func set_state(value: State) -> void:
-	state = value
+func set_state(state: State) -> void:
+	self.state = state
+func get_state() -> State:
+	return self.state
+
+func set_state_previous(state: State) -> void:
+	self.state_previous = state
+func get_state_previous() -> State:
+	return self.state_previous
 
 func get_velocities() -> Dictionary:
 	return state.get_velocities()
