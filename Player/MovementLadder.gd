@@ -11,6 +11,13 @@ class_name MovementLadder extends State
 
 var speed: float = speed_run
 
+enum JumpStates {
+	NO,      # not jumping
+	UP,      # slow upjump
+	HIGH    # fast upjump
+}
+var state_jump_current = JumpStates.NO
+
 enum SpeedStates {
 	RUN,
 	WALK,
@@ -25,6 +32,11 @@ func ready():
 	pass
 
 func input(_event: InputEvent) -> void:
+	if Input.is_action_just_pressed("jump_default"):
+		state_jump_current = JumpStates.UP
+	if Input.is_action_just_pressed("jump_high"):
+		state_jump_current = JumpStates.HIGH
+	
 	if Input.is_action_pressed("move_walk"):
 		state_speed_current = SpeedStates.WALK
 	else:
@@ -73,7 +85,25 @@ func gravity(delta: float) -> Vector3:
 	return Vector3.ZERO
 
 func jump(delta: float) -> Vector3:
-	return Vector3.ZERO
+	match state_jump_current:
+		JumpStates.NO:
+			# stop any ladder movement if the player jumped into the ladder
+			jump_vel = Vector3.ZERO
+		
+		JumpStates.UP:
+			state_jump_current = JumpStates.NO
+			player.on_ladder_exited(ladder)
+		
+		JumpStates.HIGH:
+			# launch the player backwards away from the ladder
+			#var _forward: Vector3 = camera_fp.transform.basis * Vector3(0, 1, 0)
+			#var walk_dir: Vector3 = Vector3(_forward.x, 0, _forward.z).normalized()
+			#jump_vel = walk_vel.move_toward(walk_dir * speed, acceleration_land * delta)
+			
+			state_jump_current = JumpStates.NO
+			player.on_ladder_exited(ladder)
+	
+	return jump_vel
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func process(delta):
