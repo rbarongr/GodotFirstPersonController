@@ -31,8 +31,6 @@ func on_land_exited():
 func on_ladder_entered(ladder: Ladder):
 	print("ladder entered")
 	ladder_counter += 1
-	#ladder_array.append(ladder)
-	#self.ladder = ladder
 	
 	var velocities = state_machine.get_velocities()
 	
@@ -42,12 +40,11 @@ func on_ladder_entered(ladder: Ladder):
 		state_machine.set_state_previous(state_previous)
 	
 	state_machine.set_velocities(velocities)
-	state_movement_ladder.set_ladder(ladder)
+	#state_movement_ladder.set_ladder(ladder)
 
 func on_ladder_exited(ladder: Ladder):
 	print("ladder exited")
 	ladder_counter -= 1
-	#ladder_array.erase(ladder)
 	
 	if ladder_counter <= 0:
 		match state_machine.get_state_previous():

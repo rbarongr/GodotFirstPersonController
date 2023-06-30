@@ -72,7 +72,6 @@ func walk(delta: float) -> Vector3:
 	return walk_vel
 
 func player_adjust_speed() -> void:
-	print("speed: ", state_speed_current)
 	match state_speed_current:
 		SpeedStates.CROUCH:
 			speed = speed_crouched
@@ -109,8 +108,8 @@ func jump(delta: float) -> Vector3:
 func process(delta):
 	pass
 
-func set_ladder(ladder: Ladder) -> void:
-	self.ladder = ladder
+#func set_ladder(ladder: Ladder) -> void:
+#	self.ladder = ladder
 
-func get_ladder() -> Ladder:
-	return self.ladder
+#func get_ladder() -> Ladder:
+#	return self.ladder

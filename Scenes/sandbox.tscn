@@ -53,7 +53,7 @@ size = Vector3(2, 0.5, 6)
 material = SubResource("StandardMaterial3D_p85vg")
 
 [node name="Ramp5" type="CSGBox3D" parent="Platform"]
-transform = Transform3D(-0.000609351, 0.436645, 0.899634, -4.37857e-05, 0.899634, -0.436645, -0.999999, -0.000305403, -0.000529051, 20.8049, -2.81585, -12.4472)
+transform = Transform3D(-0.000609351, 0.436645, 0.899634, -4.37857e-05, 0.899634, -0.436645, -0.999999, -0.000305403, -0.000529051, 20.8049, -2.79591, -12.4472)
 use_collision = true
 size = Vector3(5.22599, 0.5, 11.8397)
 material = SubResource("StandardMaterial3D_p85vg")
