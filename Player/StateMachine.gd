@@ -43,6 +43,7 @@ func _jump(delta: float) -> Vector3:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	state.process(delta)
+	print(state)
 
 
 func set_state(state: State) -> void:

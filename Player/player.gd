@@ -49,13 +49,14 @@ func on_ladder_exited(ladder: Ladder):
 	if ladder_counter <= 0:
 		match state_machine.get_state_previous():
 			state_movement_land:
-				print("a")
+				print("a: back to land")
 				on_land_entered()
 			state_movement_water:
-				print("b")
-				on_water_entered()
+				print("b: back to water")
+				#on_water_entered()
+				state_machine.set_state(state_movement_water)
 			state_movement_ladder:
-				print("c")
+				print("c: still on ladder")
 			_:
 				print("wtf")
 
@@ -63,16 +64,28 @@ func on_ladder_exited(ladder: Ladder):
 func on_water_entered():
 	print("water entered")
 	
-	var velocities = state_machine.get_velocities()
-	
-	state_machine.set_state(state_movement_water)
-	state_machine.set_velocities(velocities)
+	match state_machine.get_state():
+		state_movement_land, state_movement_water:
+			print("_____ a")
+			var velocities = state_machine.get_velocities()
+			
+			state_machine.set_state(state_movement_water)
+			state_machine.set_velocities(velocities)
+		
+		state_movement_ladder:
+			print("_____ b")
+			state_machine.set_state_previous(state_movement_water)
 
 #func on_water_exited(water: Water):
 func on_water_exited():
 	print("water exited")
 	
-	var velocities = state_machine.get_velocities()
-	
-	state_machine.set_state(state_movement_land)
-	state_machine.set_velocities(velocities)
+	match state_machine.get_state():
+		state_movement_water:
+			var velocities = state_machine.get_velocities()
+			
+			state_machine.set_state(state_movement_land)
+			state_machine.set_velocities(velocities)
+		
+		state_movement_ladder:
+			state_machine.set_state_previous(state_movement_land)
