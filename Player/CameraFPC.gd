@@ -1,7 +1,6 @@
 class_name CameraFPC extends Camera3D
 
-@export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 4
-@export_range(.5, 10, .5) var mouse_sens: float = 4
+@export_range(0.1, 30, 0.05, "or_greater") var camera_sens: float = 14
 
 var look_dir: Vector2 # Input direction for look/aim
 
@@ -12,7 +11,7 @@ func _ready():
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		look_dir = event.relative * 0.0001 * mouse_sens
+		look_dir = event.relative * 0.0001
 		_rotate_camera()
 
 func _input(event: InputEvent) -> void:
