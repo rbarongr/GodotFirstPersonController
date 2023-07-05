@@ -5,7 +5,7 @@ class_name Player extends CharacterBody3D
 @export_range(10, 400, 1) var acceleration: float = 100 # m/s^2
 
 @export_range(0.1, 3.0, 0.1) var jump_height: float = 1 # m
-@export_range(0.1, 9.25, 0.05, "or_greater") var camera_sens: float = 3
+@export_range(0.1, 3.0, 0.1, "or_greater") var camera_sens: float = 1
 
 var jumping: bool = false
 var mouse_captured: bool = false
@@ -24,13 +24,15 @@ var jump_vel: Vector3 # Jumping velocity
 func _ready() -> void:
 	capture_mouse()
 
-func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		look_dir = event.relative * 0.001
+		if mouse_captured: _rotate_camera()
 	if Input.is_action_just_pressed("jump"): jumping = true
 	if Input.is_action_just_pressed("exit"): get_tree().quit()
 
 func _physics_process(delta: float) -> void:
-	if mouse_captured: _rotate_camera(delta)
+	if mouse_captured: _handle_joypad_camera_rotation(delta)
 	velocity = _walk(delta) + _gravity(delta) + _jump(delta)
 	move_and_slide()
 
@@ -42,11 +44,16 @@ func release_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	mouse_captured = false
 
-func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
-	look_dir += Input.get_vector("look_left","look_right","look_up","look_down")
-	camera.rotation.y -= look_dir.x * camera_sens * sens_mod * delta
-	camera.rotation.x = clamp(camera.rotation.x - look_dir.y * camera_sens * sens_mod * delta, -1.5, 1.5)
-	look_dir = Vector2.ZERO
+func _rotate_camera(sens_mod: float = 1.0) -> void:
+	camera.rotation.y -= look_dir.x * camera_sens * sens_mod
+	camera.rotation.x = clamp(camera.rotation.x - look_dir.y * camera_sens * sens_mod, -1.5, 1.5)
+
+func _handle_joypad_camera_rotation(delta: float, sens_mod: float = 1.0) -> void:
+	var joypad_dir: Vector2 = Input.get_vector("look_left","look_right","look_up","look_down")
+	if joypad_dir.length() > 0:
+		look_dir += joypad_dir * delta
+		_rotate_camera(sens_mod)
+		look_dir = Vector2.ZERO
 
 func _walk(delta: float) -> Vector3:
 	move_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backwards")
