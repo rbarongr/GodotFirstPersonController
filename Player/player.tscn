@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cdk6hwb4hi2wc"]
+[gd_scene load_steps=18 format=3 uid="uid://cdk6hwb4hi2wc"]
 
 [ext_resource type="Script" path="res://Player/player.gd" id="1_dcw4n"]
 [ext_resource type="Script" path="res://Player/CameraFPC.gd" id="2_dhq3g"]
@@ -6,12 +6,14 @@
 [ext_resource type="Script" path="res://Player/PlayerFlashlight.gd" id="4_4yh6y"]
 [ext_resource type="Texture2D" uid="uid://57f5ku7qlfsv" path="res://Assets/crosshair.png" id="5_0y77a"]
 [ext_resource type="Texture2D" uid="uid://cjejtlsx67kht" path="res://Assets/reticle.png" id="6_7stmy"]
+[ext_resource type="Script" path="res://Player/CollisionRayCrosshair.gd" id="7_irvru"]
 [ext_resource type="Script" path="res://Player/VisibleBody.gd" id="7_rb8hp"]
 [ext_resource type="Script" path="res://Player/FPSCounter.gd" id="8_rwpqo"]
 [ext_resource type="Script" path="res://Player/StateMachine.gd" id="9_tehte"]
 [ext_resource type="Script" path="res://Player/MovementLand.gd" id="10_fjaio"]
 [ext_resource type="Script" path="res://Player/MovementWater.gd" id="11_igeq8"]
 [ext_resource type="Script" path="res://Player/MovementLadder.gd" id="12_qja8q"]
+[ext_resource type="Script" path="res://Player/AimTarget.gd" id="14_e6da4"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3rsb5"]
 radius = 0.357319
@@ -91,7 +93,10 @@ texture = ExtResource("6_7stmy")
 stretch_mode = 3
 
 [node name="CollisionRayCrosshair" type="RayCast3D" parent="CShapeHead/CameraFPC"]
+unique_name_in_owner = true
 target_position = Vector3(0, 0, -100)
+collide_with_areas = true
+script = ExtResource("7_irvru")
 
 [node name="RayTop" type="RayCast3D" parent="CShapeHead"]
 unique_name_in_owner = true
@@ -151,3 +156,9 @@ script = ExtResource("11_igeq8")
 [node name="MovementLadder" type="Node3D" parent="StateMachine"]
 unique_name_in_owner = true
 script = ExtResource("12_qja8q")
+
+[node name="AimTarget" type="Sprite3D" parent="."]
+unique_name_in_owner = true
+pixel_size = 0.005
+texture = ExtResource("6_7stmy")
+script = ExtResource("14_e6da4")
