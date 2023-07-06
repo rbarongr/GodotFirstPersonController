@@ -12,7 +12,7 @@ func _ready():
 	pass # Replace with function body.
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion: look_dir = event.relative * 0.01
+	#if event is InputEventMouseMotion: look_dir = event.relative * 0.01
 	
 	if current:
 		if Input.is_action_just_pressed("mouse_wheel_up"):
@@ -22,15 +22,18 @@ func _input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	#if player.is_mouse_captured:
-	_rotate_camera(delta)
+	#_rotate_camera(delta)
+	pass
 
 func _rotate_camera(delta: float, sens_mod: float = 1.0) -> void:
+	"""
 	look_dir += Input.get_vector("look_left","look_right","look_up","look_down")
 	
 	rotation.y -= look_dir.x * camera_sens * sens_mod * delta
 	
 	look_dir = Vector2.ZERO
-	
+	"""
+	pass
 
 func _process(delta: float):
 	if Input.is_action_just_pressed("map_toggle"):
