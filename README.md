@@ -13,6 +13,8 @@ The main scene is a _Sandbox_ scene used to test the controls:
 | <kbd>W</kbd>,<kbd>A</kbd>,<kbd>S</kbd>,<kbd>D</kbd>, <kbd>left stick</kbd> | `move_` + _dir_ | Move |
 | `mouse`, <kbd>right stick</kbd> | `look_` + _dir_ | Look/Aim |
 | <kbd>Space</kbd>, <kbd>Xbox Ⓐ</kbd> | `jump` | Apply jump force |
+| <kbd>Shift</kbd>, <kbd>Xbox LB</kbd> | `sprint` | Increase movement speed (Sprint) |
+| <kbd>Ctrl</kbd>, <kbd>Xbox RB</kbd> | `crouch` | Decrease movement speed (Crouch) |
 | <kbd>ESC</kbd>, <kbd>Xbox Ⓑ</kbd> | `exit` | Close the game |
 
 You can change any of this keys in: Project Settings → Input Map.
