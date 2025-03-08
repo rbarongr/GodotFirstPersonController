@@ -71,5 +71,5 @@ func _jump(delta: float) -> Vector3:
 		if is_on_floor(): jump_vel = Vector3(0, sqrt(4 * jump_height * gravity), 0)
 		jumping = false
 		return jump_vel
-	jump_vel = Vector3.ZERO if is_on_floor() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
+	jump_vel = Vector3.ZERO if is_on_floor() or is_on_ceiling_only() else jump_vel.move_toward(Vector3.ZERO, gravity * delta)
 	return jump_vel
